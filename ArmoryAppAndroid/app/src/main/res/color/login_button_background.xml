@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mirrors TertiaryButton's normal/disabled backgrounds (Views/Common/TertiaryButton.swift
+     + LoginViewController's `setBackgroundColor(.primary, forState: .normal)` /
+     `setBackgroundColor(UIColor(hex: "6483c4"), forState: .disabled)`). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/disabled_button" android:state_enabled="false" />
+    <item android:color="@color/primary" />
+</selector>

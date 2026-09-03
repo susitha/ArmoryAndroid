@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotlin/Android equivalent of EnterCheckinAssetDetailsViewController.swift:
+     an asset header, then a white card of fields (User*, Password*, No. of
+     Mags, Total Weight — the last two required only when the category needs
+     a weight check), on a primary-blue screen. Same shape as Checkout's
+     equivalent screen — field hint strings are shared (checkout_*_hint). -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="@string/checkin_title"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/assetHeader"
+        layout="@layout/view_asset_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screenTitle" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_white_card"
+        android:clipToOutline="true"
+        android:padding="15dp"
+        app:layout_constraintBottom_toTopOf="@id/nextButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/assetHeader">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- User -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="@string/checkout_user_hint" />
+
+                <TextView style="@style/RequiredMarker" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/userInput"
+                style="@style/FieldInput"
+                android:layout_marginTop="8dp"
+                android:cursorVisible="false"
+                android:drawableEnd="@android:drawable/arrow_down_float"
+                android:focusable="false"
+                android:inputType="none" />
+
+            <!-- Password -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="@string/checkout_password_hint" />
+
+                <TextView style="@style/RequiredMarker" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/passwordInput"
+                style="@style/FieldInput"
+                android:layout_marginTop="8dp"
+                android:inputType="textPassword" />
+
+            <!-- No. of Mags (required only when the category needs a weight check) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="@string/checkout_mags_hint" />
+
+                <TextView
+                    android:id="@+id/magsRequiredMarker"
+                    style="@style/RequiredMarker"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/magsInput"
+                style="@style/FieldInput"
+                android:layout_marginTop="8dp"
+                android:inputType="number" />
+
+            <!-- Total Weight (required only when the category needs a weight check) -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/FieldLabel"
+                    android:text="@string/checkout_weight_hint" />
+
+                <TextView
+                    android:id="@+id/weightRequiredMarker"
+                    style="@style/RequiredMarker"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/weightInput"
+                style="@style/FieldInput"
+                android:layout_marginTop="8dp"
+                android:inputType="numberDecimal" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nextButton"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:enabled="false"
+        android:text="@string/scan_next_button"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primary_button_background"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

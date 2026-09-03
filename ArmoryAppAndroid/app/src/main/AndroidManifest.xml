@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- The Chainway SDK's own manifest (bundled in DeviceAPI_ver20251103_release.aar)
+         merges in BLUETOOTH, BLUETOOTH_ADMIN, CHANGE_WIFI_STATE, and
+         ACCESS_WIFI_STATE automatically — those cover the SDK's BLE/network
+         reader variants, not the C72's built-in UART module we actually use,
+         which needs no Bluetooth/location permissions of its own. -->
+
+    <application
+        android:name=".FetchCICGApplication"
+        android:allowBackup="false"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.FetchCICG"
+        tools:targetApi="34">
+
+        <!-- TODO: add android:icon/roundIcon once launcher icons are generated
+             (e.g. via Android Studio's Image Asset tool, from the iOS AppIcon
+             source image at armoryapp/ArmoryApp/ArmoryApp/Assets.xcassets/AppIcon.appiconset). -->
+
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.dashboard.DashboardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.common.ScanActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.common.CategoryPickerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.common.UserPickerActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.enroll.EnterAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.enroll.AssetSummaryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.checkout.EnterCheckoutAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.checkout.CheckoutAssetDetailsSummaryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.checkin.EnterCheckinAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.checkin.CheckinAssetDetailsSummaryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.checkin.CheckinAuthActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.search.SearchAssetActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.search.SearchAssetDetailsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.search.LocateAssetActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.inventory.TakeInventoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.inventory.InventoryBreakdownActivity"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

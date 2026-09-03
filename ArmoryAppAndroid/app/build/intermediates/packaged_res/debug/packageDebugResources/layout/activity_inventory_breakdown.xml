@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotlin/Android equivalent of InventoryBreakdownViewController.swift: an
+     Available/Missing/Checkedout toggle row (counts + colored labels), a
+     white rounded card holding a paginated results list for whichever group
+     is selected, and a "Retake" button — on a primary-blue screen, same
+     color pattern as the rest of this port (see SCAFFOLD.md). -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary"
+    android:padding="15dp">
+
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:text="@string/inventory_breakdown_title"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/groupButtonRow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screenTitle">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/availableButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:lines="2"
+            android:textAlignment="center"
+            android:textColor="@color/status_connected"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:backgroundTint="@color/inventory_group_button_background"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1.5dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/missingButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:lines="2"
+            android:textAlignment="center"
+            android:textColor="@color/status_error"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:backgroundTint="@color/inventory_group_button_background"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1.5dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/checkedoutButton"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1"
+            android:lines="2"
+            android:textAlignment="center"
+            android:textColor="@color/status_warning"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            app:backgroundTint="@color/inventory_group_button_background"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1.5dp" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_white_card"
+        android:clipToOutline="true"
+        app:layout_constraintBottom_toTopOf="@id/actionButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/groupButtonRow">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/resultsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingVertical="8dp" />
+
+        <TextView
+            android:id="@+id/emptyStateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="24dp"
+            android:textColor="@color/secondary_text"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/actionButton"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="15dp"
+        android:text="@string/inventory_retake_button"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/primary_button_background"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

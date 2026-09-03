@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotlin/Android equivalent of CheckinAuthView.swift: an asset header on a
+     muted-blue top section (~30%), and a mini re-login form (Username,
+     Password, Proceed) on a primary-blue bottom section (~70%) — same field
+     styling as LoginActivity (white label above a white rounded+bordered box
+     with a trailing icon), same button styling as its TertiaryButton-style
+     login button (white border, primary/disabled_button fill). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/disabled_button"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3"
+        android:padding="15dp">
+
+        <include
+            android:id="@+id/assetHeader"
+            layout="@layout/view_asset_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:paddingStart="25dp"
+        android:paddingTop="30dp"
+        android:paddingEnd="25dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/checkin_auth_username_hint"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/usernameInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_field"
+            android:drawableEnd="@android:drawable/ic_dialog_email"
+            android:drawableTint="@color/field_icon_gray"
+            android:imeOptions="actionNext"
+            android:inputType="text"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:singleLine="true"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/checkin_auth_password_hint"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_field"
+            android:drawableEnd="@android:drawable/ic_lock_lock"
+            android:drawableTint="@color/field_icon_gray"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:singleLine="true"
+            android:textColor="@android:color/black" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/proceedButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:enabled="false"
+            android:text="@string/checkin_auth_proceed_button"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:backgroundTint="@color/login_button_background"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/white"
+            app:strokeWidth="1.5dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

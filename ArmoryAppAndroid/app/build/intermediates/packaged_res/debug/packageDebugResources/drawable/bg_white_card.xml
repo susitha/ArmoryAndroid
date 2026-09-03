@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- White rounded card on a primary-blue screen — confirmed against a real
+     screenshot of the Enroll "enter details" form (white card, black labels,
+     gray-bordered inputs). Re-added after being deleted when a different
+     screenshot (of the Scan screen) suggested the opposite scheme; that
+     inversion turned out not to apply to these form screens — see
+     SCAFFOLD.md for the full back-and-forth. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/white" />
+    <corners android:radius="10dp" />
+</shape>

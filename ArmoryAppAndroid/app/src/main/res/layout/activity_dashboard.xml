@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kotlin/Android equivalent of DashboardViewController.swift: a nav-bar-like
+     title row, a ~40% info-card grid, and a ~60% primary-blue menu-button area. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <!-- Stand-in for the iOS large-title nav bar (title + right-side logout button). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textColor="@color/primary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/logoutButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/dashboard_logout_title"
+            android:src="@drawable/ic_logout" />
+    </LinearLayout>
+
+    <!-- Info cards (~40% of the remaining space) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/totalAssetsItem"
+                layout="@layout/item_dashboard_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="9dp"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/totalCheckoutsItem"
+                layout="@layout/item_dashboard_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="18dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/todayCheckoutsItem"
+                layout="@layout/item_dashboard_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="9dp"
+                android:layout_weight="1" />
+
+            <include
+                android:id="@+id/missingAssetsItem"
+                layout="@layout/item_dashboard_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Menu buttons (~60% of the remaining space) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:background="@color/primary"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/checkinButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="9dp"
+                android:layout_weight="1"
+                android:text="@string/dashboard_checkin"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/menu_button"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/menu_checkin"
+                app:iconGravity="textTop"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/checkoutButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:text="@string/dashboard_checkout"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/menu_button"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/menu_checkout"
+                app:iconGravity="textTop"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="18dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/enrollButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="9dp"
+                android:layout_weight="1"
+                android:text="@string/dashboard_enroll"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/menu_button"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/menu_enroll"
+                app:iconGravity="textTop"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/searchButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="9dp"
+                android:layout_marginEnd="9dp"
+                android:layout_weight="1"
+                android:text="@string/dashboard_search"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/menu_button"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/menu_search"
+                app:iconGravity="textTop"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/inventoryButton"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="9dp"
+                android:layout_weight="1"
+                android:text="@string/dashboard_inventory"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/menu_button"
+                app:cornerRadius="10dp"
+                app:icon="@drawable/menu_inventory"
+                app:iconGravity="textTop"
+                app:iconSize="30dp"
+                app:iconTint="@color/white"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1.5dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.cenango.fetchcicg"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="34" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <permission
+        android:name="com.cenango.fetchcicg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.cenango.fetchcicg.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <!--
+ The Chainway SDK's own manifest (bundled in DeviceAPI_ver20251103_release.aar)
+         merges in BLUETOOTH, BLUETOOTH_ADMIN, CHANGE_WIFI_STATE, and
+         ACCESS_WIFI_STATE automatically — those cover the SDK's BLE/network
+         reader variants, not the C72's built-in UART module we actually use,
+         which needs no Bluetooth/location permissions of its own.
+    -->
+    <application
+        android:name="com.cenango.fetchcicg.FetchCICGApplication"
+        android:allowBackup="false"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:extractNativeLibs="false"
+        android:label="@string/app_name"
+        android:testOnly="true"
+        android:theme="@style/Theme.FetchCICG" >
+
+        <!--
+             TODO: add android:icon/roundIcon once launcher icons are generated
+             (e.g. via Android Studio's Image Asset tool, from the iOS AppIcon
+             source image at armoryapp/ArmoryApp/ArmoryApp/Assets.xcassets/AppIcon.appiconset).
+        -->
+
+        <activity
+            android:name="com.cenango.fetchcicg.ui.auth.LoginActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.cenango.fetchcicg.ui.dashboard.DashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.common.ScanActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.common.CategoryPickerActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.common.UserPickerActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.enroll.EnterAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.enroll.AssetSummaryActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.checkout.EnterCheckoutAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.checkout.CheckoutAssetDetailsSummaryActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.checkin.EnterCheckinAssetDetailsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.checkin.CheckinAssetDetailsSummaryActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.checkin.CheckinAuthActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.search.SearchAssetActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.search.SearchAssetDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.search.LocateAssetActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.inventory.TakeInventoryActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.cenango.fetchcicg.ui.inventory.InventoryBreakdownActivity"
+            android:exported="false" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.cenango.fetchcicg.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

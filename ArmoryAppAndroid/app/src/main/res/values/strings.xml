@@ -1,0 +1,137 @@
+<resources>
+    <string name="app_name">FetchCICG</string>
+
+    <string name="login_username_hint">Username</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="login_version_format">Version %1$s (%2$s)</string>
+
+    <string name="dashboard_total_assets">Total Assets</string>
+    <string name="dashboard_total_checkouts">Total Checkouts</string>
+    <string name="dashboard_today_checkouts">Today\'s Checkouts</string>
+    <string name="dashboard_missing_assets">Missing Assets</string>
+    <string name="dashboard_count_na">N/A</string>
+
+    <string name="dashboard_checkin">Checkin</string>
+    <string name="dashboard_checkout">Checkout</string>
+    <string name="dashboard_enroll">Enroll</string>
+    <string name="dashboard_search">Search</string>
+    <string name="dashboard_inventory">Inventory</string>
+
+    <string name="dashboard_coming_soon">Coming soon</string>
+    <string name="dashboard_logout_title">Logout</string>
+    <string name="dashboard_logout_message">Are you sure you want to logout?</string>
+    <string name="dashboard_logout_confirm">Logout</string>
+    <string name="dashboard_logout_cancel">No</string>
+
+    <!-- Scan -->
+    <string name="scan_state_connected">Device Connected</string>
+    <string name="scan_state_not_connected">Device not Connected</string>
+    <string name="scan_state_not_connected_info">Check if device is turned on</string>
+    <string name="scan_state_low_battery">Low Battery</string>
+    <string name="scan_state_low_battery_info">Recharge device</string>
+    <string name="scan_state_overheated">Device Overheated!</string>
+    <string name="scan_state_overheated_info">Please try again later</string>
+    <string name="scan_state_scanning">Scanning for RFID Tag…</string>
+    <string name="scan_state_scanning_info">Place the device close to the tag and press the trigger</string>
+    <string name="scan_state_failed">Scanning Failed</string>
+    <string name="scan_state_failed_info">Please try again</string>
+    <string name="scan_next_button">Next</string>
+    <string name="scan_battery_na">--</string>
+
+    <!-- Enroll: enter details -->
+    <string name="enroll_title">Enroll</string>
+    <string name="enroll_name_hint">Name</string>
+    <string name="enroll_description_hint">Description</string>
+    <string name="enroll_serial_number_hint">Serial Number</string>
+    <string name="enroll_category_hint">Category</string>
+    <string name="enroll_user_hint">User</string>
+
+    <!-- Category / User pickers -->
+    <string name="pick_category_title">Pick Category</string>
+    <string name="pick_user_title">Pick User</string>
+    <string name="pick_category_empty">No categories with selectable options were found. Fetched: %1$s.</string>
+    <string name="pick_category_load_failed">Couldn\'t load categories: %1$s</string>
+    <string name="pick_user_empty">No users available.</string>
+    <string name="pick_user_load_failed">Couldn\'t load users: %1$s</string>
+
+    <!-- Enroll: summary -->
+    <string name="summary_title">Summary</string>
+    <string name="summary_field_name">Name</string>
+    <string name="summary_field_description">Description</string>
+    <string name="summary_field_serial_number">Serial Number</string>
+    <string name="summary_field_epc_tag">EPC Tag</string>
+    <string name="summary_field_assigned_user">Assigned User</string>
+    <string name="summary_save_button">Save</string>
+    <string name="summary_success_title">Success</string>
+    <string name="summary_success_message">Asset Added Successfully!</string>
+    <string name="summary_error_title">Error</string>
+    <string name="dialog_ok">OK</string>
+
+    <!-- Asset header (Checkout/Checkin) -->
+    <string name="asset_header_category_format">Category: %1$s</string>
+    <string name="asset_header_serial_format">Serial No.: %1$s</string>
+    <string name="asset_fetch_error_title">Error</string>
+
+    <!-- Checkout: enter details -->
+    <string name="checkout_title">Checkout</string>
+    <string name="checkout_user_hint">User</string>
+    <string name="checkout_password_hint">Password</string>
+    <string name="checkout_mags_hint">No. of Mags</string>
+    <string name="checkout_weight_hint">Total Weight</string>
+    <string name="checkout_access_denied_title">Access Denied</string>
+    <string name="checkout_access_denied_message">You don\'t have the authorization to check-out this asset</string>
+
+    <!-- Checkout: summary -->
+    <string name="checkout_summary_field_mags">No. of Magazines</string>
+    <string name="checkout_summary_field_weight">Total Weight</string>
+    <string name="checkout_summary_button">Checkout</string>
+    <string name="checkout_summary_success_message">Asset Checked out Successfully!</string>
+
+    <!-- Checkin: enter details (reuses checkout_user_hint/password_hint/mags_hint/weight_hint — identical text) -->
+    <string name="checkin_title">Checkin</string>
+    <string name="checkin_access_denied_title">Access Denied</string>
+    <string name="checkin_access_denied_message">You don\'t have the authorization to check-in this asset</string>
+
+    <!-- Checkin: summary (reuses checkout_summary_field_mags/weight — identical text) -->
+    <string name="checkin_summary_button">Checkin</string>
+    <string name="checkin_summary_success_message">Asset Checked in Successfully!</string>
+
+    <!-- Checkin: discrepancy note dialog (shown on a 409 conflict from the plain checkin) -->
+    <string name="checkin_discrepancy_note_hint">Note</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_continue">Continue</string>
+
+    <!-- Checkin: admin re-auth (shown when approve-and-return comes back 403) -->
+    <string name="checkin_auth_username_hint">Username</string>
+    <string name="checkin_auth_password_hint">Password</string>
+    <string name="checkin_auth_proceed_button">Proceed</string>
+
+    <!-- Search: list -->
+    <string name="search_title">Search</string>
+    <string name="search_hint">Asset ID, Name, Description, Serial No.</string>
+    <string name="search_empty_initial">Search for Assets</string>
+    <string name="search_empty_no_results">No Results Found</string>
+
+    <!-- Search: details -->
+    <string name="search_details_title">Details</string>
+    <string name="search_details_locate_button">Locate</string>
+
+    <!-- Locate -->
+    <string name="locate_title">Locate Asset</string>
+    <string name="locate_start_button">Start</string>
+    <string name="locate_stop_button">Stop</string>
+    <string name="locate_no_mask_data">No mask data</string>
+
+    <!-- Inventory: take inventory (reuses locate_start_button/locate_stop_button — identical text) -->
+    <string name="inventory_title">Inventory</string>
+    <string name="inventory_tag_count_format">%1$d Tags Found</string>
+
+    <!-- Inventory: breakdown -->
+    <string name="inventory_breakdown_title">Breakdown</string>
+    <string name="inventory_group_available_format">%1$d\nAvailable</string>
+    <string name="inventory_group_missing_format">%1$d\nMissing</string>
+    <string name="inventory_group_checkedout_format">%1$d\nCheckouts</string>
+    <string name="inventory_retake_button">Retake</string>
+    <string name="inventory_empty_no_results">No Results Found</string>
+</resources>

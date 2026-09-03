@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- iOS's PrimaryButton (Views/Common/PrimaryButton.swift) only registers a
+     ".normal" background color, so a disabled PrimaryButton looks identical
+     to an enabled one there. That reads as broken on Android where the
+     disabled state is otherwise unmistakable, so this adds a muted variant —
+     a deliberate small improvement over the 1:1 port, not an oversight. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#FFE3CB" android:state_enabled="false" />
+    <item android:color="@color/primary_button" />
+</selector>

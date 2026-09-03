@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mirrors the Available/Missing/Checkedout TertiaryButtons in
+     InventoryBreakdownViewController.swift: primary background normally,
+     secondary when selected (each button keeps its own fixed text color —
+     green/red/yellow — regardless of selection state). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/secondary" android:state_selected="true" />
+    <item android:color="@color/primary" />
+</selector>

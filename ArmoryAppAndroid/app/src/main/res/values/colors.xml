@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Pulled directly from the iOS app's theme — see ../../../../../../android-migration/THEME.md -->
+
+    <!-- Core theme -->
+    <color name="primary">#496BB3</color>
+    <color name="secondary">#2E4163</color>
+
+    <!-- Buttons -->
+    <color name="primary_button">#FFC397</color>
+    <color name="secondary_button">#708FFC</color>
+    <color name="disabled_button">#6483C4</color>
+    <color name="menu_button">#5879BD</color>
+
+    <!-- Text / misc -->
+    <color name="link_text">#0443A2</color>
+    <color name="info_background">#EDF5FF</color>
+    <color name="white">#FFFFFF</color>
+
+    <!-- Input fields (matches iOS's ExtendedTextField: systemGray border/icon) -->
+    <color name="field_border_gray">#8E8E93</color>
+    <color name="field_icon_gray">#8E8E93</color>
+
+    <!-- Matches iOS's .secondaryLabel (light mode), used for dashboard card subtitles -->
+    <color name="secondary_text">#6E6E73</color>
+
+    <!-- RFID scan status -->
+    <color name="status_connected">#34C759</color>
+    <color name="status_disconnected">#8E8E93</color>
+    <color name="status_low_battery">#FF9500</color>
+    <color name="status_error">#FF3B30</color>
+
+    <!-- Matches iOS's .systemYellow — Inventory breakdown's "Checkedout" button text -->
+    <color name="status_warning">#FFCC00</color>
+</resources>
