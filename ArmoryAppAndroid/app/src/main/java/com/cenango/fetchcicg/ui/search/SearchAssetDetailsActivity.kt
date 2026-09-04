@@ -24,6 +24,7 @@ class SearchAssetDetailsActivity : AppCompatActivity() {
         const val EXTRA_ASSET_NAME = "extra_asset_name"
         const val EXTRA_ASSET_DESCRIPTION = "extra_asset_description"
         const val EXTRA_ASSET_SERIAL_NUMBER = "extra_asset_serial_number"
+        const val EXTRA_ASSET_CATEGORY_NAME = "extra_asset_category_name"
         const val EXTRA_ASSET_TAG = "extra_asset_tag"
     }
 
@@ -40,7 +41,13 @@ class SearchAssetDetailsActivity : AppCompatActivity() {
         if (tag != null) {
             locateButton.visibility = View.VISIBLE
             locateButton.setOnClickListener {
-                startActivity(Intent(this, LocateAssetActivity::class.java).putExtra(LocateAssetActivity.EXTRA_TAG, tag))
+                startActivity(
+                    Intent(this, LocateAssetActivity::class.java)
+                        .putExtra(LocateAssetActivity.EXTRA_TAG, tag)
+                        .putExtra(LocateAssetActivity.EXTRA_ASSET_NAME, intent.getStringExtra(EXTRA_ASSET_NAME))
+                        .putExtra(LocateAssetActivity.EXTRA_ASSET_CATEGORY_NAME, intent.getStringExtra(EXTRA_ASSET_CATEGORY_NAME))
+                        .putExtra(LocateAssetActivity.EXTRA_ASSET_SERIAL_NUMBER, intent.getStringExtra(EXTRA_ASSET_SERIAL_NUMBER))
+                )
             }
         } else {
             locateButton.visibility = View.GONE

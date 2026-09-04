@@ -33,16 +33,10 @@
         android:appComponentFactory="androidx.core.app.CoreComponentFactory"
         android:debuggable="true"
         android:extractNativeLibs="false"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:testOnly="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/Theme.FetchCICG" >
-
-        <!--
-             TODO: add android:icon/roundIcon once launcher icons are generated
-             (e.g. via Android Studio's Image Asset tool, from the iOS AppIcon
-             source image at armoryapp/ArmoryApp/ArmoryApp/Assets.xcassets/AppIcon.appiconset).
-        -->
-
         <activity
             android:name="com.cenango.fetchcicg.ui.auth.LoginActivity"
             android:exported="true"

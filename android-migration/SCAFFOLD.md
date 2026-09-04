@@ -308,6 +308,39 @@ ArmoryAppAndroid/
     `status_failed.png`). An earlier pass used tiny tinted framework
     "presence" dot icons here, which looked poor stretched up to a 120dp
     status graphic — replaced for that reason.
+  - **`DEVICE_CONNECTED`/`SCANNING` icon replaced again, this time on direct
+    user feedback against the real device** ("check mark ... not nice, try
+    something other than that"). Went through two iterations: first a
+    hand-built signal-wave glyph in the same colored-circle style as the
+    other `ic_status_*` icons (kept the checkmark's problem though — it
+    still didn't read as "device online" distinctly from `SUCCESS`'s own
+    checkmark) — then, after the user shared a reference screenshot from a
+    different app showing a scanner+tag illustration, a full illustration:
+    **`res/drawable-nodpi/device_scan_tag.png`**, generated with a one-off
+    Pillow script (not checked in) that draws a small RFID-tag glyph (blue
+    rounded rect, white chip square, sine-wave antenna squiggle) and orange
+    signal-wave arcs directly onto a copy of the existing Search/Locate
+    device illustration (`device.png`), canvas widened 200px to the right so
+    the tag sits **in front of the device's antenna module** — the first
+    version placed it floating above the device instead, corrected on
+    follow-up feedback ("show rfid tag infront of the devcie"). Used for
+    both `DEVICE_CONNECTED` and `SCANNING` (the "present a tag" states);
+    `NOT_CONNECTED`/`LOW_BATTERY`/`OVERHEATED`/`FAILED` keep their existing
+    distinct icons since those convey specific problem states an
+    illustration wouldn't. `ic_status_connected.xml` (the intermediate
+    signal-wave attempt) and the `scan_frame.png` reference were both
+    removed from `ScanUiState`; `scan_frame.png` itself was deliberately
+    left in `res/` rather than deleted — it's a legitimate ported iOS asset,
+    just currently unreferenced.
+  - **Battery row removed** ("showing battery percentage in the scan view is
+    no need since device battery status showing in the top") — `batteryRow`/
+    `batteryText` deleted from `activity_scan.xml`, along with
+    `ScanActivity`'s `updateBatteryLevel()` and every call site
+    (`onCreate`/`onReaderConnected`/`onReaderDisconnected`). `tagText`
+    re-anchored to `cardContainer`'s bottom directly instead of
+    `batteryRow`'s (now-gone) top. `LocateAssetActivity`/
+    `TakeInventoryActivity` keep their own battery rows — this request was
+    specifically about the Scan screen (Enroll/Checkin/Checkout), not those.
   - `EnterAssetDetailsActivity`/`AssetSummaryActivity` pass data forward via
     plain `Intent` extras (name/description/categoryId/tag/serialNumber/
     assignedUserId), not Parcelable objects — avoids needing `@Parcelize`
@@ -447,6 +480,160 @@ ArmoryAppAndroid/
     baked-in white background blends into `bg_white_card` seamlessly, so no
     transparency work was needed here (unlike the PDF-sourced icons — see
     [[armory-android-icon-transparency-bug]]).
+  - **Signal gauge made taller** (28×120dp → 28×220dp in
+    `activity_locate_asset.xml`) on direct feedback that it was too short to
+    read at a glance. `SignalGaugeView.onDraw()` already draws relative to
+    its own measured `width`/`height` with no hardcoded pixel assumptions,
+    so this was a pure layout change.
+  - **Real bug, found from "it's always showing green, does it actually
+    detect the tag?"**: confirmed via a live `getRssi()` logcat capture that
+    the raw RSSI values coming off the reader were genuine and varying
+    (-43 to -80 dBm) — the parsing (`toFloatOrNull()`) was never the
+    problem. The actual bug: `LocateAssetActivity.onTagRead()` fed *every*
+    tag's RSSI into the gauge with no check that the tag matched the one
+    being located. The hardware mask (`setMask()`) is supposed to filter
+    continuous inventory to just that EPC, but `setFilter()` — the native
+    call underneath it — has the same reliability issue as
+    `stopInventory()` (see the trigger-key section above), so a read for a
+    *different*, unrelated tag could still arrive and stomp the gauge with
+    irrelevant RSSI. The same logcat capture caught it directly: two
+    different EPCs interleaved in one session (a leftover test tag from
+    earlier work, plus the actual target). Fixed with a client-side
+    safety-net filter — `onTagRead()` now returns early unless
+    `tag == this.tag` — regardless of whether the hardware mask holds.
+  - **Also found while investigating the above, from "first time it stuck
+    somewhere, second time it worked"**: `LocateAssetActivity` had the exact
+    same duplicate-schedule race already found and fixed in `ScanActivity`
+    (`onReaderConnected()` firing twice within ~100ms of the screen opening,
+    each independently launching a delayed setup coroutine with no guard
+    against a previous one still pending) — it just never got the same fix
+    when `ScanActivity`'s was made. Fixed the same way: a `scanLoopJob: Job?`
+    field, cancelled before each relaunch. Also applied to
+    `TakeInventoryActivity.onConnected()`, which has the identical pattern
+    (lower-impact there, since it doesn't auto-start an actual scan — but
+    the same redundant-scheduling bug regardless).
+  - **Asset header added to the top of the screen** on direct request
+    ("show the asset which going to search... like the entries showing in
+    the search view before the locate screen") — `activity_locate_asset.xml`
+    now `<include>`s `view_asset_header.xml` between the title and the main
+    card, same placement convention as Checkout/Checkin's entry-details
+    screens. Needed a small data-flow gap closed first: `LocateAssetActivity`
+    previously only received `EXTRA_TAG` — no name/category/serial — because
+    `SearchAssetDetailsActivity` never forwarded them to it (and didn't even
+    have a category name on hand itself; `SearchAssetActivity.openDetails()`
+    wasn't passing `asset.category.name` to it at all). Threaded through:
+    `SearchAssetActivity` → `SearchAssetDetailsActivity`
+    (new `EXTRA_ASSET_CATEGORY_NAME`) → `LocateAssetActivity` (new
+    `EXTRA_ASSET_NAME`/`EXTRA_ASSET_CATEGORY_NAME`/`EXTRA_ASSET_SERIAL_NUMBER`,
+    bound via the existing `bindAssetHeader()` primitives overload — no new
+    binder code needed, just wiring).
+  - **Proximity beep added** ("small beep that signaling asset nearby...
+    the beep delay getting lower when asset near by" — a metal-detector/
+    geiger-counter feel, not a single beep-on-find): `onTagRead()` now calls
+    `beepForProximity(rssi)`, which linearly interpolates the interval
+    between beeps from `BEEP_INTERVAL_MAX_MS` (700ms, weakest in-range
+    signal) down to `BEEP_INTERVAL_MIN_MS` (90ms, strongest — close to the
+    reader's own ~80ms read cadence, so it reads as near-continuous right on
+    top of the tag) based on the same RSSI ratio the gauge uses.
+    `SignalGaugeView.setRssi()`'s ratio math was pulled out into a public
+    companion `ratioFor(rssi)` so both the gauge and the beep timing derive
+    from one source instead of two copies of `MIN_RSSI`/`MAX_RSSI`. Uses its
+    own `ToneGenerator` on `STREAM_MUSIC` (same audibility fix as
+    `ScanActivity`'s beep — `STREAM_NOTIFICATION` proved inaudible on the
+    C66 despite actually playing).
+  - **Real bug, root-caused and fixed (not just mitigated) — from "sometimes
+    its stuck when tag very near by, after that need to stop and start it
+    again"**: first confirmed live via logcat while reproducing on-device — a
+    `setFilter() err :-1`, then zero further `setInventoryCallback` firings
+    of any kind, ever. Initially mitigated with a watchdog (see below) before
+    a follow-up report narrowed it precisely: **"this happens when the first
+    time locating asset, then stop and start won't give that issue"** — i.e.
+    not proximity-related at all, and not random; specifically the *first*
+    locate attempt on a given screen visit, never a manual restart after
+    that. That pattern pointed straight at a real race:
+    `ChainwayRfidManager.startRfidScanning()`'s continuous-mode branch called
+    `reader.startInventoryTag()` **directly on the caller's thread**, while
+    `setSearchRfidMode()`/`clearMask()`/`setMask()` all queue their
+    `setPower()`/`setFilter()` calls asynchronously on `uartExecutor` (the
+    single-thread executor added for the earlier main-thread-blocking fix).
+    `LocateAssetActivity.setTagToSearch()` calls `setMask()` then
+    `startRfidScanning()` back to back with no wait — so on a screen's first
+    locate, `startInventoryTag()` could fire on the UART before the
+    just-queued `setFilter()` had actually finished, exactly the one
+    sequence (`setSearchRfidMode` → `clearMask` → `setMask` →
+    `startRfidScanning`) a manual Stop/Start never repeats (that just calls
+    `stopRfidScanning()`/`startRfidScanning()` alone). **Fixed** by routing
+    `startInventoryTag()` through `uartExecutor` too, so it's correctly
+    serialized after any pending `setFilter()`/`setPower()` instead of racing
+    them.
+    - **Watchdog kept as a safety net, not removed**: `LocateAssetActivity`
+      still tracks `lastReadAtMs` (updated on *any* tag read, even a
+      mismatched one) and restarts scanning if silent for >6s while
+      `isLocating`, checked every 2s. The race above was a confirmed, fully
+      explained cause of *this specific* symptom, but the underlying
+      `stopInventory()`/`setPower()`/`setFilter()` native reliability issue
+      is still real and could plausibly cause the same kind of silent stop
+      through some other path — the watchdog costs little (a restart is
+      cheap and harmless when nothing's wrong) and stays as insurance.
+  - **`SignalGaugeView` rebuilt as a segmented meter**, on the user sharing an
+    actual reference screenshot of the real iOS screen: a stack of discrete
+    lit/unlit blocks (10 segments) with hard red→yellow→green color zones at
+    the 35%/80% thresholds, not the smooth single-fill continuous-gradient
+    bar this originally shipped as. That continuous version was a
+    deliberate, explicitly-documented simplification (see the class's own
+    old doc comment) rather than a bug — replaced now that the segmented
+    look was specifically requested against a real reference rather than
+    guessed at. `ratioFor(rssi)` (used by both the gauge and
+    `LocateAssetActivity`'s proximity beep) is unchanged; only `onDraw()`'s
+    rendering changed, from one `fillRect` to a loop of `SEGMENT_COUNT`
+    rounded rects, each independently colored by whether the current ratio
+    reaches that segment and which zone that segment's own range falls in
+    (not the live ratio's zone — a segment's color is fixed by its position,
+    same as the reference's bar).
+  - **Follow-up polish on the same segmented gauge, from "first and last
+    segments are not full, make it full, position the gauge in the middle,
+    and device bottom of the gauge with pulse"** — three fixes together:
+    1. Each segment was rounding all four of its own corners, which made the
+       top and bottom segments look visibly smaller than the middle ones
+       (no adjacent segment to visually mask the rounding on their outer
+       edge). Switched to `Path.addRoundRect()` with per-corner radii — only
+       the true outer corners of the whole stack (top of the top segment,
+       bottom of the bottom one) are rounded now; every segment fills its
+       full allotted rect.
+    2. `gaugeRow` was a horizontal row (gauge on the left, device+pulse on
+       the right) — not what the reference shows. Rebuilt as a `FrameLayout`
+       with the gauge `layout_gravity="top|center_horizontal"` and the
+       device+pulse group `layout_gravity="bottom|center_horizontal"`, so
+       the device sits right at the gauge's base with the pulse rings around
+       it, both horizontally centered — matching the reference layout, not
+       the earlier side-by-side one.
+    3. The plain `centerDot` (a tinted `bg_circle`, standing in for "the
+       device" inside the pulse rings) was replaced by the real
+       `device.png` illustration, shrunk to 48dp to fit inside the pulse
+       ring's 100dp frame — the same asset already used elsewhere on this
+       screen, just resized and moved rather than a new one. `LocateAssetActivity`'s
+       `centerDot` tinting code (and its now-unused `GradientDrawable`
+       import) was removed since there's no plain dot left to tint.
+  - **`device.png` given real transparency** — moving it inside the pulse
+    rings exposed that it was still opaque with a baked-in white background
+    (noted as fine at the time it was first added, since it then only ever
+    sat on the white card — see the earlier note in this section), which
+    showed as an ugly white square over the blue pulse rings/card once
+    repositioned. Went looking for an alpha-preserving source first: the
+    newly-added iOS `armoryapp/.../Assets.xcassets/device.imageset/device.png`
+    turned out to be a *different* image entirely — the literal old AsReader
+    gun-sled photo this project deliberately never ported (see
+    [[armory-android-hardware-swap]]), not this illustration, just
+    coincidentally sharing a filename. No usable source existed, so fixed by
+    flood-filling the existing PNG's background directly (from all four
+    corners, since none of the illustration's own content touches the image
+    border) to transparent, `thresh=30` to catch anti-aliased near-white
+    edge pixels without eating into the actual dark device body — confirmed
+    via pixel inspection afterward (corner alpha=0, screen-area alpha=255).
+    `device_scan_tag.png` (`ScanActivity`'s illustration, generated by
+    drawing onto a *copy* of `device.png` before this change) is unaffected
+    — it's a separate, already-baked static file, still opaque, still fine
+    since it only ever sits on `ScanActivity`'s white card.
 
 - **Inventory flow** — `ui/inventory/TakeInventoryActivity.kt` +
   `InventoryBreakdownActivity.kt`. Real port of
@@ -501,7 +688,16 @@ now built. What's left is polish and hardware verification, not new screens:
    recover for it, real or otherwise; it needs a new C72-appropriate graphic
    (or none at all) rather than a rasterization fix.
 2. ~~Verify `POWER_GAIN_MIN`/`MAX` and wire up the trigger key against a
-   physical C72~~ **Trigger key done**, `POWER_GAIN_MIN`/`MAX` still open.
+   physical C72~~ **Both done**, `POWER_GAIN_MAX` confirmed live (`MIN`
+   still an educated guess — see the constant's own doc in
+   `ChainwayRfidManager.kt` for why `setPower()` couldn't be tested at the
+   low end): a one-off diagnostic `getPower()` call read back **30** right
+   after a real connect on the C66, exactly matching the existing
+   `POWER_GAIN_MAX` constant — real confirmation, not a guess, that 30 is a
+   genuine in-range firmware value. (Took two attempts to even get this
+   reading: `RfidManager` is constructed lazily off the first screen that
+   touches it, not at app startup, so the first diagnostic build's logging
+   silently never ran until navigating into Enroll.)
    `ScanActivity` now overrides `dispatchKeyEvent()` and calls `attemptScan()`
    when the keycode is in `TRIGGER_KEYCODES`, verified end-to-end (built +
    installed real debug APKs, pressed the physical trigger, confirmed it
@@ -598,8 +794,28 @@ now built. What's left is polish and hardware verification, not new screens:
           correctness (e.g. `setPower` completes before the read that
           depends on it). Confirmed fixed on the C66 — the felt delay between
           scans dropped noticeably.
-3. Generate real launcher icons (`android:icon`/`roundIcon` — see the TODO in
-   `AndroidManifest.xml`) from the iOS `AppIcon` source.
+3. ~~Generate real launcher icons (`android:icon`/`roundIcon`) from the iOS
+   `AppIcon` source~~ **Done.** The `armoryapp/` iOS source tree (referenced
+   throughout this doc) wasn't actually present in this environment when this
+   item was first picked up — it was added mid-task, at which point the real
+   master (`Assets.xcassets/AppIcon.appiconset/1024.png`, 1024×1024, opaque
+   white background per iOS convention — no transparency, since iOS icons
+   don't support it) became available and was used instead of an
+   approximation. Legacy `mipmap-{m,h,xh,xxh,xxx}hdpi/ic_launcher(_round).png`
+   are that master resized full-bleed at each density (48/72/96/144/192px),
+   matching the actual designed icon rather than a re-inset guess. Adaptive
+   icons (`mipmap-anydpi-v26/ic_launcher(_round).xml`, API 26+) use a
+   `@color/white` background plus a separate transparent-background
+   foreground layer (`ic_launcher_foreground.png` per density) generated from
+   the already-ported `drawable-nodpi/logo.png` (verified to be the same
+   mark, alpha-trimmed, inset to the standard 66% adaptive-icon safe zone).
+   `AndroidManifest.xml`'s `<application>` now sets
+   `android:icon="@mipmap/ic_launcher"` / `android:roundIcon="@mipmap/ic_launcher_round"`,
+   replacing the TODO. Generated via a one-off Python/Pillow script (not
+   checked in — this was a single generation pass, not a repeatable build
+   step); rebuilt, installed, and confirmed rendering correctly (proper mark
+   on a white adaptive background, OS-applied squircle mask) via the device's
+   own App Info screen on the C66.
 4. ~~This project has never been run through an actual Gradle build in this
    environment~~ **No longer true** — `gradle :app:assembleDebug` (system
    Gradle 9.6.1, `JAVA_HOME` pointed at a JDK 17 install; the project's own

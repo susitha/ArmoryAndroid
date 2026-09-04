@@ -138,6 +138,7 @@ class SearchAssetActivity : AppCompatActivity() {
                 .putExtra(SearchAssetDetailsActivity.EXTRA_ASSET_NAME, asset.name)
                 .putExtra(SearchAssetDetailsActivity.EXTRA_ASSET_DESCRIPTION, asset.description)
                 .putExtra(SearchAssetDetailsActivity.EXTRA_ASSET_SERIAL_NUMBER, asset.serialNumber)
+                .putExtra(SearchAssetDetailsActivity.EXTRA_ASSET_CATEGORY_NAME, asset.category.name)
                 .putExtra(SearchAssetDetailsActivity.EXTRA_ASSET_TAG, asset.tag)
         )
     }

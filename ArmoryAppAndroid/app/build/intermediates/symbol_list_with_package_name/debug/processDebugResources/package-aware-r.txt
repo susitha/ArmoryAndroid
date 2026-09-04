@@ -3028,6 +3028,7 @@ drawable design_ic_visibility_off
 drawable design_password_eye
 drawable design_snackbar_background
 drawable device
+drawable device_scan_tag
 drawable handgun
 drawable ic_arrow_back_black_24
 drawable ic_call_answer
@@ -3048,7 +3049,6 @@ drawable ic_mtrl_chip_checked_black
 drawable ic_mtrl_chip_checked_circle
 drawable ic_mtrl_chip_close_circle
 drawable ic_search_black_24
-drawable ic_status_connected
 drawable ic_status_low_battery
 drawable ic_status_not_connected
 drawable ic_status_overheated
@@ -3929,6 +3929,9 @@ layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
 layout support_simple_spinner_dropdown_item
 layout view_asset_header
+mipmap ic_launcher
+mipmap ic_launcher_foreground
+mipmap ic_launcher_round
 plurals mtrl_badge_content_description
 string abc_action_bar_home_description
 string abc_action_bar_up_description

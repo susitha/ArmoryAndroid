@@ -30,8 +30,10 @@ enum class ScanFlow { ENROLL, CHECKIN, CHECKOUT }
 /**
  * Kotlin/Android equivalent of iOS's `ScanViewController`
  * (Controllers/Common/ScanViewController.swift): shows RFID reader
- * connection/battery status and a single-tag scan, then hands the scanned
- * EPC tag off to the next screen for the active flow.
+ * connection status and a single-tag scan, then hands the scanned EPC tag
+ * off to the next screen for the active flow. No battery row — removed on
+ * request, since the device's own battery is already shown in the system
+ * status bar and duplicating it here was redundant.
  *
  * iOS starts scanning when the reader's physical trigger key is pressed
  * (`AsReaderGUNManager.enableTriggerButton`). The Chainway SDK doesn't expose
@@ -82,7 +84,6 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
     private lateinit var stateSubtitle: TextView
     private lateinit var stateIcon: ImageView
     private lateinit var tagText: TextView
-    private lateinit var batteryText: TextView
     private lateinit var nextButton: MaterialButton
 
     private var scannedTag: String? = null
@@ -121,7 +122,6 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
         stateSubtitle = findViewById(R.id.stateSubtitle)
         stateIcon = findViewById(R.id.stateIcon)
         tagText = findViewById(R.id.tagText)
-        batteryText = findViewById(R.id.batteryText)
         nextButton = findViewById(R.id.nextButton)
 
         findViewById<View>(R.id.cardContainer).setOnClickListener { attemptScan() }
@@ -147,7 +147,6 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
         } else {
             render(ScanUiState.DEVICE_NOT_CONNECTED)
         }
-        updateBatteryLevel()
     }
 
     override fun onDestroy() {
@@ -203,10 +202,6 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
         onTagRead(tag = "3000E2$randomSuffix", rssi = 0f)
     }
 
-    private fun updateBatteryLevel() {
-        batteryText.text = app.rfidManager.getBatteryStatus().percentageText
-    }
-
     private fun render(state: ScanUiState) {
         stateTitle.text = getString(state.textRes)
         stateTitle.setTextColor(ContextCompat.getColor(this, state.colorRes))
@@ -246,13 +241,11 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
 
     override fun onReaderConnected() {
         render(ScanUiState.DEVICE_CONNECTED)
-        updateBatteryLevel()
         beginScanningAfterDelay()
     }
 
     override fun onReaderDisconnected() {
         render(ScanUiState.DEVICE_NOT_CONNECTED)
-        updateBatteryLevel()
     }
 
     override fun onErrorOccurred(error: RfidError) {

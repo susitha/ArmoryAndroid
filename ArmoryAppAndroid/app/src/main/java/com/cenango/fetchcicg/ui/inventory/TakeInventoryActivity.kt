@@ -16,6 +16,7 @@ import com.cenango.fetchcicg.rfid.RfidManagerListener
 import com.cenango.fetchcicg.ui.common.ScanUiState
 import com.cenango.fetchcicg.ui.search.PulseView
 import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,6 +49,13 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
 
     private var isScanning = false
     private val foundTags = mutableSetOf<String>()
+
+    // Tracks the pending onConnected() coroutine so a redundant reconnect
+    // (the reader's ConnectionStatusCallback can report CONNECTED twice
+    // within ~100ms of this screen opening — confirmed via logcat, the same
+    // root cause fixed in ScanActivity's/LocateAssetActivity's scanLoopJob)
+    // cancels the old one instead of racing it with a second.
+    private var scanLoopJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,7 +96,8 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
     private fun onConnected() {
         renderStatus(ScanUiState.DEVICE_CONNECTED)
         actionButton.isEnabled = true
-        lifecycleScope.launch {
+        scanLoopJob?.cancel()
+        scanLoopJob = lifecycleScope.launch {
             delay(1500)
             app.rfidManager.setSearchRfidMode()
             app.rfidManager.clearMask()

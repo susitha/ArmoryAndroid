@@ -25,15 +25,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <include
+        android:id="@+id/assetHeader"
+        layout="@layout/view_asset_header"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/screenTitle" />
+
     <View
         android:id="@+id/cardContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/bg_white_card"
         app:layout_constraintBottom_toTopOf="@id/actionButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/screenTitle" />
+        app:layout_constraintTop_toBottomOf="@id/assetHeader" />
 
     <TextView
         android:id="@+id/stateTitle"
@@ -76,61 +86,47 @@
         app:layout_constraintTop_toBottomOf="@id/stateSubtitle"
         app:layout_constraintVertical_bias="0.5" />
 
-    <!-- Shown while connected/scanning: the device illustration above a
-         signal bar + pulsing "search" indicator row. -->
-    <LinearLayout
+    <!-- Shown while connected/scanning: the signal gauge centered, with the
+         device sitting at its base inside the pulsing "searching" rings —
+         matches the real iOS screen's layout (a reference screenshot), not
+         the earlier side-by-side arrangement. -->
+    <FrameLayout
         android:id="@+id/gaugeRow"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:gravity="center"
-        android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/batteryRow"
         app:layout_constraintEnd_toEndOf="@id/cardContainer"
         app:layout_constraintStart_toStartOf="@id/cardContainer"
         app:layout_constraintTop_toBottomOf="@id/stateSubtitle">
 
-        <ImageView
-            android:id="@+id/deviceImage"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginBottom="12dp"
-            android:contentDescription="@null"
-            android:scaleType="fitCenter"
-            android:src="@drawable/device" />
+        <com.cenango.fetchcicg.ui.search.SignalGaugeView
+            android:id="@+id/signalGauge"
+            android:layout_width="28dp"
+            android:layout_height="220dp"
+            android:layout_gravity="top|center_horizontal" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="bottom|center_horizontal">
 
-            <com.cenango.fetchcicg.ui.search.SignalGaugeView
-                android:id="@+id/signalGauge"
-                android:layout_width="28dp"
-                android:layout_height="120dp" />
+            <com.cenango.fetchcicg.ui.search.PulseView
+                android:id="@+id/pulseView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-            <FrameLayout
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginStart="24dp">
+            <ImageView
+                android:id="@+id/deviceImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/device" />
+        </FrameLayout>
 
-                <com.cenango.fetchcicg.ui.search.PulseView
-                    android:id="@+id/pulseView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <View
-                    android:id="@+id/centerDot"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/bg_circle" />
-            </FrameLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/batteryRow"

@@ -30,9 +30,9 @@ drawable dashboard_today_checkout
 drawable dashboard_total_assets
 drawable dashboard_total_checkout
 drawable device
+drawable device_scan_tag
 drawable handgun
 drawable ic_logout
-drawable ic_status_connected
 drawable ic_status_low_battery
 drawable ic_status_not_connected
 drawable ic_status_overheated
@@ -142,6 +142,9 @@ layout item_picker_header
 layout item_picker_row
 layout item_summary_card
 layout view_asset_header
+mipmap ic_launcher
+mipmap ic_launcher_foreground
+mipmap ic_launcher_round
 string app_name
 string asset_fetch_error_title
 string asset_header_category_format

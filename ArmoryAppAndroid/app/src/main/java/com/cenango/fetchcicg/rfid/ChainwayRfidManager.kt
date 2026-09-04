@@ -18,9 +18,9 @@ import java.util.concurrent.Executors
  * `com.rscja.deviceapi` SDK (API_Ver20251103, from
  * https://www.chainway.net/Support/Info/10 — the "API_Ver..." download for
  * Android Studio). Verified against that SDK's bundled Javadoc
- * (`API_Ver20251103/doc/com/rscja/deviceapi/`); trigger-key wiring has since
- * been confirmed against a physical C72 (see the trigger-key note in `init`
- * below) — the power-gain range (marked TODO below) still hasn't.
+ * (`API_Ver20251103/doc/com/rscja/deviceapi/`); trigger-key wiring and the
+ * power-gain range have both since been confirmed against physical hardware
+ * — see the trigger-key note in `init` below and [POWER_GAIN_MAX]'s doc.
  *
  * The SDK's own class is `RFIDWithUHFUART`: a singleton
  * (`RFIDWithUHFUART.getInstance()`) covering serial/UART-connected UHF
@@ -34,9 +34,16 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
     companion object {
         private const val TAG = "ChainwayRfidManager"
 
-        // TODO: the SDK's Javadoc for setPower()/getPower() doesn't state the
-        // valid range — confirm against the C72 data sheet or by calling
-        // getPower() after init() to see what firmware default comes back.
+        // The SDK's Javadoc for setPower()/getPower() doesn't state the valid
+        // range, and no bundled demo/docs cross-reference it either — but
+        // getPower() called right after a real connect (on a C66) read back
+        // 30, matching this MAX exactly, confirming 30 is a genuine in-range
+        // firmware value rather than a guess. MIN (5) is unconfirmed the same
+        // way — a live low-end reading would need setPower() to actually
+        // succeed on hardware, which it hasn't during this work (see
+        // stopInventory()/setPower()/setFilter()'s reliability issue in
+        // SCAFFOLD.md) — treat 5 as a reasonable conservative floor, not a
+        // verified one.
         private const val POWER_GAIN_MIN = 5
         private const val POWER_GAIN_MAX = 30
     }
@@ -141,7 +148,18 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
         Log.d(TAG, "startRfidScanning() continuousMode=$continuousMode")
 
         if (continuousMode) {
-            reader.startInventoryTag()
+            // Must go through uartExecutor, not run directly on the caller's
+            // thread — setSearchRfidMode()/clearMask()/setMask() all queue
+            // their setPower()/setFilter() calls there asynchronously, and
+            // LocateAssetActivity calls this right after them with no wait.
+            // Without this, startInventoryTag() could fire on the UART before
+            // a just-queued setFilter() actually finished — a real,
+            // reproduced race: it only ever hit on a screen's *first* locate
+            // attempt (the one sequence that chains setSearchRfidMode ->
+            // clearMask -> setMask -> startRfidScanning back to back), never
+            // on a manual Stop/Start after that (which calls this alone, no
+            // preceding setFilter queued). See SCAFFOLD.md.
+            uartExecutor.execute { reader.startInventoryTag() }
         } else {
             // inventorySingleTag() blocks on UART I/O, so run it off the main thread.
             uartExecutor.execute {

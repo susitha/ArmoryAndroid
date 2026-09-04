@@ -161,3 +161,34 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       handheld instead, now at `res/drawable-nodpi/device.png` and wired into
       `activity_locate_asset.xml` as a 120dp graphic above the signal-gauge/
       pulse-ring row — see SCAFFOLD.md's Search/Locate notes for detail.
+- [x] Real launcher icons generated from the iOS `AppIcon` source (added to
+      this environment mid-task — see SCAFFOLD.md's Next steps §3) — legacy
+      `mipmap-*/ic_launcher(_round).png` from the 1024px master full-bleed,
+      adaptive `mipmap-anydpi-v26/ic_launcher(_round).xml` with a white
+      background and a transparent foreground layer from the already-ported
+      logo mark. Confirmed rendering correctly on-device (App Info screen).
+- [x] Login screen layout bug fixed: the version-number text was pinned to
+      the whole screen's bottom edge, so opening the keyboard (which shrinks
+      the screen under `adjustResize`) squeezed it up into the password
+      field instead of moving with the rest of the form. Chained it below
+      the login button/loading indicator instead, confirmed via screenshot
+      on the C66 with the keyboard open.
+- [x] `POWER_GAIN_MAX` confirmed against real hardware (a one-off `getPower()`
+      diagnostic read back 30 right after connect on the C66, matching the
+      constant exactly) — see SCAFFOLD.md's Next steps §2. `POWER_GAIN_MIN`
+      stays an educated guess; `setPower()` never succeeded during this work
+      to verify the low end the same way.
+- [x] All of SCAFFOLD.md's "Next steps" punch list is now closed out —
+      trigger key, beep, power-gain range, launcher icons, and the first
+      real Gradle build all done and confirmed on physical hardware (a C72
+      and a C66). What's left is genuinely open-ended hardening (the
+      `stopInventory()` SDK reliability issue) rather than a tracked list.
+- [x] Scan screen's `DEVICE_CONNECTED`/`SCANNING` icon replaced after direct
+      feedback ("checkmark isn't nice") — went through two iterations
+      (a hand-built signal-wave glyph, then a full device+tag illustration
+      matching a reference screenshot the user shared) before landing on
+      `res/drawable-nodpi/device_scan_tag.png`: the existing Search/Locate
+      C72 illustration with a small RFID-tag glyph and orange signal-wave
+      arcs composited onto it with Pillow, tag positioned in front of the
+      device's antenna module (not floating above it — first pass had this
+      wrong too). See SCAFFOLD.md's Enroll notes.
