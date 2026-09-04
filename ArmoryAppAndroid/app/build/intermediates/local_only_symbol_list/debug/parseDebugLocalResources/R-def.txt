@@ -68,7 +68,6 @@ id cardScroll
 id cardTitle
 id cardsContainer
 id categoryInput
-id centerDot
 id checkedoutButton
 id checkinButton
 id checkoutButton

@@ -124,6 +124,10 @@
         "source": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-main-40:/drawable-nodpi/scan_frame.png"
     },
     {
+        "merged": "com.cenango.fetchcicg.app-debug-38:/layout_activity_take_inventory.xml.flat",
+        "source": "com.cenango.fetchcicg.app-main-40:/layout/activity_take_inventory.xml"
+    },
+    {
         "merged": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-debug-38:/drawable_bg_input_field.xml.flat",
         "source": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-main-40:/drawable/bg_input_field.xml"
     },
@@ -246,10 +250,6 @@
     {
         "merged": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-debug-38:/drawable-nodpi_device_scan_tag.png.flat",
         "source": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-main-40:/drawable-nodpi/device_scan_tag.png"
-    },
-    {
-        "merged": "com.cenango.fetchcicg.app-debug-38:/drawable-nodpi_device.png.flat",
-        "source": "com.cenango.fetchcicg.app-main-40:/drawable-nodpi/device.png"
     },
     {
         "merged": "/Users/susithajanaka/.gradle/daemon/9.6.1/com.cenango.fetchcicg.app-debug-38:/layout_activity_checkin_auth.xml.flat",

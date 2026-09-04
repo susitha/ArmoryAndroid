@@ -104,8 +104,8 @@
             android:textStyle="bold" />
 
         <FrameLayout
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginTop="16dp">
 
             <com.cenango.fetchcicg.ui.search.PulseView
@@ -113,12 +113,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <View
-                android:id="@+id/centerDot"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+            <ImageView
+                android:id="@+id/deviceImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:background="@drawable/bg_circle" />
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/device" />
         </FrameLayout>
 
     </LinearLayout>

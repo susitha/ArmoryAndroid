@@ -657,6 +657,27 @@ ArmoryAppAndroid/
     display — which can leave that message invisible while still "scanning".
     This port forces back to the status card in that case instead, so the
     problem is actually seen.
+  - **Pulse rings' `centerDot` swapped for the device illustration**, same
+    fix as `LocateAssetActivity` and for the same request ("make the
+    inventory view pulsar same with the device illustration") — the plain
+    tinted `bg_circle` dot replaced by the (now-transparent, see the Search
+    flow's device.png note) `device.png`, 48dp inside a 100dp pulse frame
+    (was 120dp, matching the `LocateAssetActivity` sizing this mirrors).
+    `centerDot`'s `GradientDrawable` tinting code and that now-unused import
+    removed from `TakeInventoryActivity.kt` the same way.
+  - **Real bug — stale "Stop" button/view after Retake**: `stopScanning()`
+    correctly sets `isScanning = false` before navigating to
+    `InventoryBreakdownActivity`, but never reset `actionButton`'s text or
+    called `renderStatus()` to swap the view back from the scanning row to
+    the status card — harmless while `InventoryBreakdownActivity` is on top,
+    but `TakeInventoryActivity` itself is never finished (just pushed under
+    it), so "Retake" finishing back to it resumed the exact stale UI Stop
+    left behind: button still reading "Stop", scanning row still showing,
+    despite `isScanning` already being correctly `false`. Fixed by adding
+    `actionButton.setText(R.string.locate_start_button)` and
+    `renderStatus(ScanUiState.DEVICE_CONNECTED)` to `stopScanning()` itself
+    — `renderStatus()` already checks `!isScanning` to decide status-card vs.
+    scanning-row visibility, so this was enough; no new state needed.
   - **`InventoryBreakdownActivity`**: an Available/Missing/Checkedout toggle
     row (green/red/yellow text, `inventory_group_button_background.xml`
     selector for the primary/secondary fill) over a paginated list — the 4th

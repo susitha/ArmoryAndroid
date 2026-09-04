@@ -1,7 +1,6 @@
 package com.cenango.fetchcicg.ui.inventory
 
 import android.content.Intent
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -71,9 +70,6 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
         batteryText = findViewById(R.id.batteryText)
         actionButton = findViewById(R.id.actionButton)
 
-        val centerDot = findViewById<View>(R.id.centerDot)
-        (centerDot.background.mutate() as GradientDrawable).setColor(ContextCompat.getColor(this, R.color.primary))
-
         actionButton.setOnClickListener { toggleScanning() }
 
         app.rfidManager.listener = this
@@ -126,6 +122,15 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
         isScanning = false
         pulseView.stop()
         app.rfidManager.stopRfidScanning()
+
+        // This Activity isn't finished here — InventoryBreakdownActivity is
+        // just pushed on top, and "Retake" there finish()es back to resume
+        // this same instance. Without resetting the button/view here first,
+        // Retake landed back on the stale "Stop"/scanning-row UI left over
+        // from before Stop was tapped, even though isScanning was already
+        // correctly false.
+        actionButton.setText(R.string.locate_start_button)
+        renderStatus(ScanUiState.DEVICE_CONNECTED)
 
         startActivity(
             Intent(this, InventoryBreakdownActivity::class.java)

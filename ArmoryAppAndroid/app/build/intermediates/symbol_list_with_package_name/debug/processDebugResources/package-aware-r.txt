@@ -3265,7 +3265,6 @@ id carryVelocity
 id categoryInput
 id center
 id centerCrop
-id centerDot
 id centerInside
 id center_horizontal
 id center_vertical
