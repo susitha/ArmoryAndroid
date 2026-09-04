@@ -120,13 +120,26 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       saved to `SessionManager`); Search/Inventory's real continuous RFID
       scanning + EPC masking, with two hand-rolled custom views
       (`SignalGaugeView`, `PulseView`) replacing iOS's third-party gauge/pulse
-      libraries. Known gaps carried forward: no physical trigger-key support
-      yet (single-shot Tag-mode scanning — Enroll/Checkout/Checkin — is
-      tap-to-retry, with a debug-only simulated-tag path for testing without
-      a C72 at all; continuous-mode scanning — Search/Inventory — doesn't
-      need this fix). Nothing has been through an actual Gradle build in this
-      environment (no Android SDK here) — every file's been reviewed by hand,
-      but a real build and on-device/hardware testing are still outstanding.
+      libraries. Known gap carried forward: continuous-mode scanning
+      (Search/Inventory) doesn't need a trigger-key fix — it already relies
+      on real continuous scanning, not the trigger.
+- [x] Physical trigger-key support, wired and confirmed on two real devices
+      (a C72 and a C66) — see SCAFFOLD.md's Next steps §2 for the full
+      detail. `ScanActivity` now scans on the physical trigger press, keyed
+      off a `Set<Int>` of confirmed per-device keycodes (each Chainway unit
+      tested has fired a *different* code — 293 on the C72, 294 on the C66),
+      gated on `enableTriggerButton`, with the previous tap-to-retry/
+      debug-simulated-tag stand-in kept as a fallback rather than removed.
+      Also the project's first real Gradle build in this environment (JDK 17
+      required — see SCAFFOLD.md). Two more real bugs found and fixed via
+      live on-device testing along the way: a duplicate-scan-schedule race on
+      a screen's second visit (two connect callbacks each independently
+      arming an auto-scan timer), and felt UI delay between scans (slow
+      native SDK calls blocking the main thread) — both in SCAFFOLD.md §2.
+      Beep added too (`ToneGenerator`, since `RFIDWithUHFUART` has no
+      beep/buzzer API) — had to switch from `STREAM_NOTIFICATION` to
+      `STREAM_MUSIC` after the former proved inaudible on the C66 despite
+      actually playing.
 - [x] Dashboard menu-button icons and the handgun/rifle/machine-gun category
       icons are now real ported assets, not stand-ins. They'd originally been
       left as stock Android icons / letter-in-circle placeholders because

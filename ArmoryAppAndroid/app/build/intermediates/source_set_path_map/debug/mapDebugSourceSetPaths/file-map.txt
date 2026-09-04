@@ -1,41 +1,41 @@
-com.cenango.fetchcicg.app-emoji2-1.3.0-0 /Users/susitha/.gradle/caches/8.9/transforms/139fef1c9d2776d43e782b25c607785b/transformed/emoji2-1.3.0/res
-com.cenango.fetchcicg.app-drawerlayout-1.1.1-1 /Users/susitha/.gradle/caches/8.9/transforms/28f0ec0ba8f312556cbd77e7e8c76bbe/transformed/drawerlayout-1.1.1/res
-com.cenango.fetchcicg.app-DeviceAPI_ver20251103_release-2 /Users/susitha/.gradle/caches/8.9/transforms/2ad5bb788a295c26d963d4660155d684/transformed/DeviceAPI_ver20251103_release/res
-com.cenango.fetchcicg.app-activity-ktx-1.9.1-3 /Users/susitha/.gradle/caches/8.9/transforms/3c392d4765e012f0348bd05e35601ebe/transformed/activity-ktx-1.9.1/res
-com.cenango.fetchcicg.app-lifecycle-process-2.8.4-4 /Users/susitha/.gradle/caches/8.9/transforms/40434fe7d53af9b80a9c456825aa964f/transformed/lifecycle-process-2.8.4/res
-com.cenango.fetchcicg.app-emoji2-views-helper-1.3.0-5 /Users/susitha/.gradle/caches/8.9/transforms/596389614a24512e0232f986350180f8/transformed/emoji2-views-helper-1.3.0/res
-com.cenango.fetchcicg.app-core-runtime-2.2.0-6 /Users/susitha/.gradle/caches/8.9/transforms/5c4410df3da3a83ae2607805d9e9c73a/transformed/core-runtime-2.2.0/res
-com.cenango.fetchcicg.app-recyclerview-1.3.2-7 /Users/susitha/.gradle/caches/8.9/transforms/6511b9827807ae959e9113b3346e04c4/transformed/recyclerview-1.3.2/res
-com.cenango.fetchcicg.app-startup-runtime-1.1.1-8 /Users/susitha/.gradle/caches/8.9/transforms/6ae8239bbe00e974e0b27b30e91720db/transformed/startup-runtime-1.1.1/res
-com.cenango.fetchcicg.app-core-1.13.1-9 /Users/susitha/.gradle/caches/8.9/transforms/75ea9556da06a2ddba1460016a6e4412/transformed/core-1.13.1/res
-com.cenango.fetchcicg.app-savedstate-1.2.1-10 /Users/susitha/.gradle/caches/8.9/transforms/786c332627c04ffb06220dec6643a503/transformed/savedstate-1.2.1/res
-com.cenango.fetchcicg.app-lifecycle-viewmodel-savedstate-2.8.4-11 /Users/susitha/.gradle/caches/8.9/transforms/787a3509ec813706b7779a2f0a3dac49/transformed/lifecycle-viewmodel-savedstate-2.8.4/res
-com.cenango.fetchcicg.app-transition-1.5.0-12 /Users/susitha/.gradle/caches/8.9/transforms/7fa9408a1722e7370328a1ce4b9afd3b/transformed/transition-1.5.0/res
-com.cenango.fetchcicg.app-lifecycle-livedata-core-ktx-2.8.4-13 /Users/susitha/.gradle/caches/8.9/transforms/84220b7eb2f25dfc1e05e440b1999870/transformed/lifecycle-livedata-core-ktx-2.8.4/res
-com.cenango.fetchcicg.app-lifecycle-runtime-release-14 /Users/susitha/.gradle/caches/8.9/transforms/84a1a08e67d7cd14a867e491528c5725/transformed/lifecycle-runtime-release/res
-com.cenango.fetchcicg.app-lifecycle-runtime-ktx-release-15 /Users/susitha/.gradle/caches/8.9/transforms/878c0e6ad76a89b261597069793a658b/transformed/lifecycle-runtime-ktx-release/res
-com.cenango.fetchcicg.app-appcompat-resources-1.7.0-16 /Users/susitha/.gradle/caches/8.9/transforms/9ae29ff85ad2ec3db564df7574b94ee1/transformed/appcompat-resources-1.7.0/res
-com.cenango.fetchcicg.app-customview-poolingcontainer-1.0.0-17 /Users/susitha/.gradle/caches/8.9/transforms/9ae71d0e7098845908fe4e4aff7c9d98/transformed/customview-poolingcontainer-1.0.0/res
-com.cenango.fetchcicg.app-core-ktx-1.13.1-18 /Users/susitha/.gradle/caches/8.9/transforms/9be80ed33a50677396df67a8d0901b3f/transformed/core-ktx-1.13.1/res
-com.cenango.fetchcicg.app-profileinstaller-1.3.1-19 /Users/susitha/.gradle/caches/8.9/transforms/a32939e4304f2e550433c222a70792ec/transformed/profileinstaller-1.3.1/res
-com.cenango.fetchcicg.app-activity-1.9.1-20 /Users/susitha/.gradle/caches/8.9/transforms/ad37a0037731e7b045cf974057e29334/transformed/activity-1.9.1/res
-com.cenango.fetchcicg.app-lifecycle-livedata-core-2.8.4-21 /Users/susitha/.gradle/caches/8.9/transforms/b0c1d5028fefe97447d15436b88a74ff/transformed/lifecycle-livedata-core-2.8.4/res
-com.cenango.fetchcicg.app-fragment-1.5.4-22 /Users/susitha/.gradle/caches/8.9/transforms/bbbaf732a54ae5049a3d88054c029caf/transformed/fragment-1.5.4/res
-com.cenango.fetchcicg.app-lifecycle-viewmodel-ktx-2.8.4-23 /Users/susitha/.gradle/caches/8.9/transforms/c0d2d1c8b5efa159a7b67489a7d2dfa2/transformed/lifecycle-viewmodel-ktx-2.8.4/res
-com.cenango.fetchcicg.app-annotation-experimental-1.4.0-24 /Users/susitha/.gradle/caches/8.9/transforms/c3dc1750e8cfef5e4e8e8770a316782c/transformed/annotation-experimental-1.4.0/res
-com.cenango.fetchcicg.app-appcompat-1.7.0-25 /Users/susitha/.gradle/caches/8.9/transforms/c7ceb06cad513c2e720cb3c83575edf6/transformed/appcompat-1.7.0/res
-com.cenango.fetchcicg.app-constraintlayout-2.1.4-26 /Users/susitha/.gradle/caches/8.9/transforms/d00542cce6e3ef29127d4460aa10d92c/transformed/constraintlayout-2.1.4/res
-com.cenango.fetchcicg.app-lifecycle-livedata-2.8.4-27 /Users/susitha/.gradle/caches/8.9/transforms/d16188dd46e7e3da1b6b55487b57d87a/transformed/lifecycle-livedata-2.8.4/res
-com.cenango.fetchcicg.app-coordinatorlayout-1.1.0-28 /Users/susitha/.gradle/caches/8.9/transforms/d3644c582cb1f9e8453f427fc5594fc4/transformed/coordinatorlayout-1.1.0/res
-com.cenango.fetchcicg.app-material-1.12.0-29 /Users/susitha/.gradle/caches/8.9/transforms/d43f65daf7e20aa9ebd67395a581b86d/transformed/material-1.12.0/res
-com.cenango.fetchcicg.app-viewpager2-1.1.0-beta02-30 /Users/susitha/.gradle/caches/8.9/transforms/dab121cbc69a70224e6d6b180f0c4aec/transformed/viewpager2-1.1.0-beta02/res
-com.cenango.fetchcicg.app-lifecycle-viewmodel-release-31 /Users/susitha/.gradle/caches/8.9/transforms/ee950da7ae031b133dbf50e59b44ec65/transformed/lifecycle-viewmodel-release/res
-com.cenango.fetchcicg.app-cardview-1.0.0-32 /Users/susitha/.gradle/caches/8.9/transforms/f46f5da0c608f55fe2cb2cd80bd3c972/transformed/cardview-1.0.0/res
-com.cenango.fetchcicg.app-savedstate-ktx-1.2.1-33 /Users/susitha/.gradle/caches/8.9/transforms/f6794163666710ac38d7cec68ce67a59/transformed/savedstate-ktx-1.2.1/res
-com.cenango.fetchcicg.app-pngs-34 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/build/generated/res/pngs/debug
-com.cenango.fetchcicg.app-resValues-35 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/build/generated/res/resValues/debug
-com.cenango.fetchcicg.app-packageDebugResources-36 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
-com.cenango.fetchcicg.app-packageDebugResources-37 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
-com.cenango.fetchcicg.app-debug-38 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/build/intermediates/merged_res/debug/mergeDebugResources
-com.cenango.fetchcicg.app-debug-39 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/src/debug/res
-com.cenango.fetchcicg.app-main-40 /Users/susitha/Downloads/FetchCIFG claude/ArmoryAppAndroid/app/src/main/res
+com.cenango.fetchcicg.app-emoji2-1.3.0-0 /Users/susithajanaka/.gradle/caches/8.9/transforms/139fef1c9d2776d43e782b25c607785b/transformed/emoji2-1.3.0/res
+com.cenango.fetchcicg.app-drawerlayout-1.1.1-1 /Users/susithajanaka/.gradle/caches/8.9/transforms/28f0ec0ba8f312556cbd77e7e8c76bbe/transformed/drawerlayout-1.1.1/res
+com.cenango.fetchcicg.app-DeviceAPI_ver20251103_release-2 /Users/susithajanaka/.gradle/caches/8.9/transforms/2ad5bb788a295c26d963d4660155d684/transformed/DeviceAPI_ver20251103_release/res
+com.cenango.fetchcicg.app-activity-ktx-1.9.1-3 /Users/susithajanaka/.gradle/caches/8.9/transforms/3c392d4765e012f0348bd05e35601ebe/transformed/activity-ktx-1.9.1/res
+com.cenango.fetchcicg.app-lifecycle-process-2.8.4-4 /Users/susithajanaka/.gradle/caches/8.9/transforms/40434fe7d53af9b80a9c456825aa964f/transformed/lifecycle-process-2.8.4/res
+com.cenango.fetchcicg.app-emoji2-views-helper-1.3.0-5 /Users/susithajanaka/.gradle/caches/8.9/transforms/596389614a24512e0232f986350180f8/transformed/emoji2-views-helper-1.3.0/res
+com.cenango.fetchcicg.app-core-runtime-2.2.0-6 /Users/susithajanaka/.gradle/caches/8.9/transforms/5c4410df3da3a83ae2607805d9e9c73a/transformed/core-runtime-2.2.0/res
+com.cenango.fetchcicg.app-recyclerview-1.3.2-7 /Users/susithajanaka/.gradle/caches/8.9/transforms/6511b9827807ae959e9113b3346e04c4/transformed/recyclerview-1.3.2/res
+com.cenango.fetchcicg.app-startup-runtime-1.1.1-8 /Users/susithajanaka/.gradle/caches/8.9/transforms/6ae8239bbe00e974e0b27b30e91720db/transformed/startup-runtime-1.1.1/res
+com.cenango.fetchcicg.app-core-1.13.1-9 /Users/susithajanaka/.gradle/caches/8.9/transforms/75ea9556da06a2ddba1460016a6e4412/transformed/core-1.13.1/res
+com.cenango.fetchcicg.app-savedstate-1.2.1-10 /Users/susithajanaka/.gradle/caches/8.9/transforms/786c332627c04ffb06220dec6643a503/transformed/savedstate-1.2.1/res
+com.cenango.fetchcicg.app-lifecycle-viewmodel-savedstate-2.8.4-11 /Users/susithajanaka/.gradle/caches/8.9/transforms/787a3509ec813706b7779a2f0a3dac49/transformed/lifecycle-viewmodel-savedstate-2.8.4/res
+com.cenango.fetchcicg.app-transition-1.5.0-12 /Users/susithajanaka/.gradle/caches/8.9/transforms/7fa9408a1722e7370328a1ce4b9afd3b/transformed/transition-1.5.0/res
+com.cenango.fetchcicg.app-lifecycle-livedata-core-ktx-2.8.4-13 /Users/susithajanaka/.gradle/caches/8.9/transforms/84220b7eb2f25dfc1e05e440b1999870/transformed/lifecycle-livedata-core-ktx-2.8.4/res
+com.cenango.fetchcicg.app-lifecycle-runtime-release-14 /Users/susithajanaka/.gradle/caches/8.9/transforms/84a1a08e67d7cd14a867e491528c5725/transformed/lifecycle-runtime-release/res
+com.cenango.fetchcicg.app-lifecycle-runtime-ktx-release-15 /Users/susithajanaka/.gradle/caches/8.9/transforms/878c0e6ad76a89b261597069793a658b/transformed/lifecycle-runtime-ktx-release/res
+com.cenango.fetchcicg.app-appcompat-resources-1.7.0-16 /Users/susithajanaka/.gradle/caches/8.9/transforms/9ae29ff85ad2ec3db564df7574b94ee1/transformed/appcompat-resources-1.7.0/res
+com.cenango.fetchcicg.app-customview-poolingcontainer-1.0.0-17 /Users/susithajanaka/.gradle/caches/8.9/transforms/9ae71d0e7098845908fe4e4aff7c9d98/transformed/customview-poolingcontainer-1.0.0/res
+com.cenango.fetchcicg.app-core-ktx-1.13.1-18 /Users/susithajanaka/.gradle/caches/8.9/transforms/9be80ed33a50677396df67a8d0901b3f/transformed/core-ktx-1.13.1/res
+com.cenango.fetchcicg.app-profileinstaller-1.3.1-19 /Users/susithajanaka/.gradle/caches/8.9/transforms/a32939e4304f2e550433c222a70792ec/transformed/profileinstaller-1.3.1/res
+com.cenango.fetchcicg.app-activity-1.9.1-20 /Users/susithajanaka/.gradle/caches/8.9/transforms/ad37a0037731e7b045cf974057e29334/transformed/activity-1.9.1/res
+com.cenango.fetchcicg.app-lifecycle-livedata-core-2.8.4-21 /Users/susithajanaka/.gradle/caches/8.9/transforms/b0c1d5028fefe97447d15436b88a74ff/transformed/lifecycle-livedata-core-2.8.4/res
+com.cenango.fetchcicg.app-fragment-1.5.4-22 /Users/susithajanaka/.gradle/caches/8.9/transforms/bbbaf732a54ae5049a3d88054c029caf/transformed/fragment-1.5.4/res
+com.cenango.fetchcicg.app-lifecycle-viewmodel-ktx-2.8.4-23 /Users/susithajanaka/.gradle/caches/8.9/transforms/c0d2d1c8b5efa159a7b67489a7d2dfa2/transformed/lifecycle-viewmodel-ktx-2.8.4/res
+com.cenango.fetchcicg.app-annotation-experimental-1.4.0-24 /Users/susithajanaka/.gradle/caches/8.9/transforms/c3dc1750e8cfef5e4e8e8770a316782c/transformed/annotation-experimental-1.4.0/res
+com.cenango.fetchcicg.app-appcompat-1.7.0-25 /Users/susithajanaka/.gradle/caches/8.9/transforms/c7ceb06cad513c2e720cb3c83575edf6/transformed/appcompat-1.7.0/res
+com.cenango.fetchcicg.app-constraintlayout-2.1.4-26 /Users/susithajanaka/.gradle/caches/8.9/transforms/d00542cce6e3ef29127d4460aa10d92c/transformed/constraintlayout-2.1.4/res
+com.cenango.fetchcicg.app-lifecycle-livedata-2.8.4-27 /Users/susithajanaka/.gradle/caches/8.9/transforms/d16188dd46e7e3da1b6b55487b57d87a/transformed/lifecycle-livedata-2.8.4/res
+com.cenango.fetchcicg.app-coordinatorlayout-1.1.0-28 /Users/susithajanaka/.gradle/caches/8.9/transforms/d3644c582cb1f9e8453f427fc5594fc4/transformed/coordinatorlayout-1.1.0/res
+com.cenango.fetchcicg.app-material-1.12.0-29 /Users/susithajanaka/.gradle/caches/8.9/transforms/d43f65daf7e20aa9ebd67395a581b86d/transformed/material-1.12.0/res
+com.cenango.fetchcicg.app-viewpager2-1.1.0-beta02-30 /Users/susithajanaka/.gradle/caches/8.9/transforms/dab121cbc69a70224e6d6b180f0c4aec/transformed/viewpager2-1.1.0-beta02/res
+com.cenango.fetchcicg.app-lifecycle-viewmodel-release-31 /Users/susithajanaka/.gradle/caches/8.9/transforms/ee950da7ae031b133dbf50e59b44ec65/transformed/lifecycle-viewmodel-release/res
+com.cenango.fetchcicg.app-cardview-1.0.0-32 /Users/susithajanaka/.gradle/caches/8.9/transforms/f46f5da0c608f55fe2cb2cd80bd3c972/transformed/cardview-1.0.0/res
+com.cenango.fetchcicg.app-savedstate-ktx-1.2.1-33 /Users/susithajanaka/.gradle/caches/8.9/transforms/f6794163666710ac38d7cec68ce67a59/transformed/savedstate-ktx-1.2.1/res
+com.cenango.fetchcicg.app-pngs-34 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/build/generated/res/pngs/debug
+com.cenango.fetchcicg.app-resValues-35 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/build/generated/res/resValues/debug
+com.cenango.fetchcicg.app-packageDebugResources-36 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.cenango.fetchcicg.app-packageDebugResources-37 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.cenango.fetchcicg.app-debug-38 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.cenango.fetchcicg.app-debug-39 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/src/debug/res
+com.cenango.fetchcicg.app-main-40 /Users/susithajanaka/OfficeWorks/FetchCICG Android /ArmoryAndroid/ArmoryAppAndroid/app/src/main/res

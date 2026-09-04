@@ -500,17 +500,111 @@ now built. What's left is polish and hardware verification, not new screens:
    see [[armory-android-hardware-swap]] — so there's no source asset to
    recover for it, real or otherwise; it needs a new C72-appropriate graphic
    (or none at all) rather than a rasterization fix.
-2. Verify `POWER_GAIN_MIN`/`MAX` and wire up the trigger key against a
-   physical C72 (see the two TODOs in `ChainwayRfidManager.kt`) — this also
-   unblocks giving `ScanActivity` real continuous-scan/retry behavior instead
-   of its current tap-to-retry stand-in, and would let the debug-only
-   simulated-tag path in `ScanActivity` be removed once real hardware is
-   always available for testing. `LocateAssetActivity`/`TakeInventoryActivity`
-   need no such fix — both already use real continuous scanning.
+2. ~~Verify `POWER_GAIN_MIN`/`MAX` and wire up the trigger key against a
+   physical C72~~ **Trigger key done**, `POWER_GAIN_MIN`/`MAX` still open.
+   `ScanActivity` now overrides `dispatchKeyEvent()` and calls `attemptScan()`
+   when the keycode is in `TRIGGER_KEYCODES`, verified end-to-end (built +
+   installed real debug APKs, pressed the physical trigger, confirmed it
+   scans a tag in Enroll) on two different physical units. Gated on
+   `RfidManager.enableTriggerButton`, which `ScanActivity` now sets
+   `true`/`false` in `onCreate`/`onDestroy` — previously declared on the
+   interface but never read anywhere. The tap-to-retry card and the
+   debug-only simulated-tag path were deliberately **kept**, not removed, as
+   fallbacks. `LocateAssetActivity`/`TakeInventoryActivity` still need no
+   such fix — both already use real continuous scanning, unaffected by this.
+   - **Keycode is per-device, not universal — confirmed twice now**: a C72
+     (`HC720A210800130`, model `c72e`) fires **`293`** (scanCode `186`); a
+     C66 (`1c46e4a0`, model `C66`) fires **`294`** (`WindowManager`'s
+     `interceptKeyTi` log, not a plain `KeyEvent(...)` line — same fix,
+     different log line to grep for). Both found live via `adb logcat` during
+     an actual physical press — a vendor config app's displayed values
+     (`280`/`139`, from the C72's "keyboardemulator" system settings app,
+     UHF > KeyCode) turned out *not* to match either real device once that
+     app's own legacy scanning service is disabled. `TRIGGER_KEYCODES` in
+     `ScanActivity` is a `Set<Int>` of every confirmed value (`293`, `294`,
+     plus `280`/`139` kept as unconfirmed fallbacks) rather than one
+     "correct" code, and its doc says what to do for the next device model:
+     `adb logcat` for `keyCode=` or `interceptKeyTi` during a real press,
+     add the number to the set. Lesson holds for both: don't trust a vendor
+     config app's displayed values over a live capture on the exact device.
+   - **Beep added, then its stream corrected on a second device**:
+     `ScanActivity` fires a short `ToneGenerator` tone from `onTagRead`,
+     since `RFIDWithUHFUART` (the class this app uses) has no beep/buzzer API
+     at all — confirmed by disassembling the SDK jar; other reader classes in
+     the same SDK (`BluetoothReader`/`RFIDWithUHFUSB`/etc.) do have one, but
+     not this one. Originally used `STREAM_NOTIFICATION`; on the C66 that
+     produced a real `AudioTrack` with frames actually delivered (confirmed
+     in logcat) but **no audible sound** — this hardware doesn't route that
+     stream to a speaker path as reliably as `STREAM_MUSIC`, which rugged/
+     kiosk-style Android devices almost always wire to the loudest built-in
+     speaker. Switched to `STREAM_MUSIC` and confirmed audible on the C66.
+     The device-level `com.rscja.scanner` "keyboardemulator" app has its own
+     `Success Sound` toggle, but that's a separate legacy keyboard-wedge
+     mode, disabled on both units tested and unrelated to this app's direct
+     SDK usage either way.
+   - **Two real bugs found via live hardware testing, not just review —
+     "can't scan another tag" / "scanning automatically without touching
+     anything"**. Both were confirmed with hard evidence (`adb logcat`), not
+     guessed, and the first fix attempt only addressed the second, smaller
+     issue — worth recording both since the symptom looked identical from
+     the outside.
+     1. **Primary cause, found second but responsible for most of the
+        symptom — a duplicate-schedule race, worse on a screen's *second*
+        visit**: instrumented logging (`Log.w`, since this device's default
+        `log.tag` is `I` and silently drops `Log.d`) showed the reader's
+        `ConnectionStatusCallback` reporting `CONNECTED` **twice** within
+        ~100ms of `ScanActivity` opening — once from `onCreate`'s own
+        `isDeviceConnected` check, once from a genuine second callback
+        (reproducible, worse on re-entry). `beginScanningAfterDelay()` had no
+        guard against being scheduled twice, so each `CONNECTED` independently
+        launched its own 1.5s-delayed `attemptScan()` coroutine — two scan
+        loops running concurrently, racing on the shared reader/
+        `isScanInFlight` state. **Fixed** by tracking the coroutine as a
+        `Job` (`scanLoopJob`) and cancelling any still-pending one before
+        launching a new one. Confirmed fixed on-device: reopening Enroll
+        repeatedly now produces exactly one automatic scan per visit (the
+        existing, intentional auto-scan-on-connect — see the class doc), not
+        a repeating stream.
+     2. **Secondary, still-real issue — `stopInventory()` reliably fails**:
+        separately confirmed in `adb logcat`'s raw SDK output
+        (`DeviceAPI`/`DeviceAPI_UHF` tags): after a tag read,
+        `ChainwayRfidManager.stopRfidScanning()``s call to `uhf.stopInventory()`
+        showed `UHF_StopGet: send STOP cmd` retried 5 times then
+        `UHF_StopGet: stop failed` / `stopInventory() err :-1`, and
+        `setPower()`/`setFilter()` (called from `setTagRfidMode()`/
+        `clearMask()`) failed the same way. This is an SDK/hardware
+        reliability issue outside app control — not fixed, and likely needs
+        vendor support or a different SDK version. Mitigated defensively:
+        `ScanActivity` tracks `isScanInFlight` (true only while a scan was
+        actually requested) and `onTagRead()` ignores any read that arrives
+        while it's false, so a stray/leftover read doesn't re-beep or
+        re-populate the UI even if this failure mode recurs.
+        - **Follow-up, also fixed**: these native calls block the calling
+          thread for ~2-2.5s while internally retrying before failing, every
+          time on this hardware. `setPower()`/`setFilter()`/`stopInventory()`
+          used to run directly on whatever thread called them — often the
+          main thread, since `ScanActivity.beginScanningAfterDelay()` calls
+          `setTagRfidMode()`/`clearMask()` from a `lifecycleScope.launch{}`
+          coroutine (`Dispatchers.Main` by default), and `onTagRead()` calls
+          `stopRfidScanning()` directly. Reported by the user as "a small
+          delay" between scans on a C66 — matches the `InputDispatcher: spent
+          2500+ms processing input event` warnings seen in logcat throughout
+          this work. **Fixed**: `ChainwayRfidManager`'s single-thread
+          executor (renamed `uartExecutor`, previously `singleReadExecutor`
+          and only used for `inventorySingleTag()`) now runs *every* UART
+          command — `setPower`, `setFilter`, `stopInventory`, and the
+          existing `inventorySingleTag` — so none of them block a caller's
+          thread, while FIFO ordering on that single thread still preserves
+          correctness (e.g. `setPower` completes before the read that
+          depends on it). Confirmed fixed on the C66 — the felt delay between
+          scans dropped noticeably.
 3. Generate real launcher icons (`android:icon`/`roundIcon` — see the TODO in
    `AndroidManifest.xml`) from the iOS `AppIcon` source.
-4. This project has never been run through an actual Gradle build in this
-   environment (no Android SDK available here) — every file has been
-   reviewed by hand and cross-checked (ids, strings, colors, drawables, model
-   field names) but a real build, and testing against a physical C72, are
-   still outstanding.
+4. ~~This project has never been run through an actual Gradle build in this
+   environment~~ **No longer true** — `gradle :app:assembleDebug` (system
+   Gradle 9.6.1, `JAVA_HOME` pointed at a JDK 17 install; the project's own
+   Gradle 8.9 wrapper jar still isn't generated) built and installed cleanly
+   on a real C72 for the trigger-key work above. Worth noting for next time:
+   the system default JDK here is 26, which fails AGP's `androidJdkImage`
+   transform (`jlink` against `android-34`'s `core-for-system-modules.jar`) —
+   needs JDK 17, not whatever `java_home` defaults to.
