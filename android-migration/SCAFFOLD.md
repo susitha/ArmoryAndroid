@@ -212,6 +212,46 @@ ArmoryAppAndroid/
     background, verified by compositing each onto the real menu-blue button
     background before wiring them in. `activity_dashboard.xml`'s `app:icon`
     values now point at these real files instead of the framework stand-ins.
+  - **Menu button label font size, three iterations to actually land it**:
+    reported as "Inventory" (the longest of the 5 labels, in the narrower
+    3-button bottom row) wrapping to 2 lines, plus the Scan screen's EPC
+    text (see the Enroll flow notes — grew 4 chars with the PC-prefix fix
+    above) doing the same. First tried 12sp uniformly across all 5 buttons —
+    still wrapped. Then 10sp — **still wrapped, confirmed via `aapt2 dump
+    xmltree` on both the built and the actually-installed-on-device APK**
+    that the value really was 10sp and really was running, ruling out a
+    stale-build red herring before trying anything else. Switched to
+    `autoSizeTextType="uniform"` (7–14sp range, `maxLines="1"`) to guarantee
+    a fit regardless of label length — this worked, but each button then
+    resolved to a *different* size (short labels stayed at 14sp, "Inventory"
+    shrunk further), which read as visually inconsistent. Settled on a
+    single uniform fixed `textSize="8sp"` for all 5 (removing autosize) —
+    fit, but reported straight back as "too small to read." Next: the actual
+    secondary problem was `MaterialButton`'s default style eating a large
+    chunk of the already-narrow button width in horizontal padding — added
+    `paddingStart`/`paddingEnd="2dp"` + `insetLeft`/`insetRight="0dp"` to
+    reclaim it, paired with a fixed `textSize="12sp"` — better, but
+    "Inventory" specifically (still the longest label) started clipping
+    mid-word at that fixed size, while the 4 shorter labels had room to
+    spare. Tried `autoSizeTextType="uniform"` (8–14sp) on top of the padding
+    fix next, which guaranteed a fit — but then reported back *again*, this
+    time as visibly mismatched sizes across the row (expected: autosize
+    resolves each button's size independently, capped only by what that
+    button's own label needs).
+    **Actual final fix — measured, not guessed**: added a one-off diagnostic
+    (`button.post { Log.d(..., "$\{button.textSize}") }` on all 5, removed
+    again once done) to read back the *exact* size autosize had resolved for
+    each button with the padding fix in place: **14sp for the 4 short
+    labels, 9sp for "Inventory."** Replaced autosize with that measured 9sp
+    as one fixed, uniform value across all 5 — real uniformity (not
+    independently-resolved-and-therefore-mismatched sizes) at the largest
+    size that's actually confirmed to fit the longest label, arrived at by
+    reading the real number instead of another guess-rebuild-reinstall
+    round. Same value applied directly to `InventoryBreakdownActivity`'s 3
+    toggle buttons too (see its own note below) — same button width, same
+    9-character longest label ("Available"/"Checkouts"), same padding fix
+    already in place there; reasonable to extrapolate rather than repeat the
+    measurement given that screen takes a full scan flow to even reach.
   - **The logout icon took a detour before settling**: `logout.imageset/logout.pdf`
     was initially ported as `logout.png` (a door-bracket + arrow glyph,
     faithful to that PDF). A screenshot that looked like the real device
@@ -712,6 +752,31 @@ ArmoryAppAndroid/
     typo ("Avaiable"); this port spells it correctly. A deliberate content
     fix, not an oversight — flagging it here in case anyone diffs against
     the iOS strings and wonders why they don't match exactly.
+  - **Same narrow-3-button text-fit issue as Dashboard's menu row, same
+    fix**: these 3 toggle buttons force a count + label onto two lines via a
+    literal `\n` in the format strings (`inventory_group_*_format`) plus
+    `android:lines="2"`, but at the original 14sp the label itself
+    ("Available"/"Checkouts", 9 chars) didn't fit its own dedicated line and
+    got clipped mid-word ("Availabl", "Checko") rather than wrapping further
+    — there's nowhere left to wrap to. First dropped to the same uniform 8sp
+    `Dashboard`'s menu buttons had landed on — fit, but reported as "too
+    small to read." Then padding-trimmed (`paddingStart`/`paddingEnd="2dp"`,
+    `insetLeft`/`insetRight="0dp"` — `MaterialButton`'s default style eats a
+    fair amount of the already-narrow 1/3-width space) with a fixed 12sp —
+    better, but "Available"/"Checkouts" (still the longest labels) started
+    clipping again while the shorter one had room to spare. **Final fix,
+    same as Dashboard's menu row**: fixed uniform **9sp** (padding trim
+    kept) — the exact value `Dashboard`'s equivalent 9-character-longest-
+    label row measured (via a temporary `button.textSize` diagnostic log,
+    not another guess) as the largest size autosize would resolve for a
+    label that long in this same button width. Applied directly here rather
+    than re-running the same diagnostic, since this screen only reachable
+    via a full scan flow — same button width, same label length, reasonable
+    to extrapolate. Worth remembering for any future narrow-button
+    label-fit issue in this app: measure the real resolved size with a
+    throwaway autosize + logging pass, then hard-code that — don't keep
+    guessing static values, and don't ship autosize itself if uniform sizing
+    across a row matters more than each button's own best-fit.
 
 ## Next steps
 
