@@ -123,6 +123,27 @@ ArmoryAppAndroid/
     no overheat *callback* at all (only a polled `getTemperature()`), so
     `onDeviceOverheated()` is currently never fired — see the `NOTE` at the
     bottom of the file.
+  - **Real cross-platform data bug, found from "in ios app epc read as
+    3000E15002535072720212000369 but in android app it read as
+    E15002535072720212000369"** — a genuine format mismatch, not just a
+    display difference, since the same physical tag needs to produce the
+    same ID string on both platforms for search/checkout/checkin/masking to
+    ever match across them. Root-caused via a live logcat capture (temporary
+    diagnostic logging of a real tag read) rather than guessed: `UHFTAGInfo`
+    carries the tag's **PC** (Protocol Control) word in its own `getPc()`
+    field, separate from `getEPC()` — confirmed live: `PC="3000"`,
+    `EPC="E15002535072720212000369"`, and `PC + EPC` matches iOS's reported
+    ID exactly. `ChainwayRfidManager` was only ever reading `getEPC()`, on
+    both the continuous-inventory and single-tag paths. **Fixed** with a
+    `fullEpc(tagInfo)` helper (`getPc() + getEPC()`, empty-string fallback
+    for a null PC) used everywhere a tag read gets reported to a listener.
+    This also means `LocateAssetActivity.setMask()`'s `format.maskIndex`/
+    `format.offset`/etc. (backend-supplied, calibrated against iOS's
+    full-length EPC string) were being applied to a **4-hex-char-shorter**
+    string than they were calibrated for before this fix — likely a second,
+    quieter bug (wrong substring extracted for the hardware mask) beyond
+    just the display/search-string mismatch, now also corrected as a
+    side effect.
 
 ## Screens (`ui/` package) — step 6, in progress
 

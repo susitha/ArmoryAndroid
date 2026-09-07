@@ -192,3 +192,15 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       arcs composited onto it with Pillow, tag positioned in front of the
       device's antenna module (not floating above it — first pass had this
       wrong too). See SCAFFOLD.md's Enroll notes.
+- [x] Real cross-platform data bug fixed: Android was reporting a tag's EPC
+      4 hex characters shorter than iOS for the *same physical tag*
+      (`E15002535072720212000369` vs. iOS's
+      `3000E15002535072720212000369`) — not a display quirk, a genuine
+      format mismatch that would break search/checkout/checkin matching
+      across platforms. Root cause: the SDK reports a tag's PC (Protocol
+      Control) word separately from its EPC (`UHFTAGInfo.getPc()` vs.
+      `getEPC()`); `ChainwayRfidManager` only ever read the latter. Fixed
+      with a `fullEpc()` helper (`getPc() + getEPC()`) used on every tag-read
+      path — see SCAFFOLD.md's RFID abstraction section for the full
+      detail, including a likely second bug this incidentally also fixed
+      (the hardware EPC mask being applied to a too-short string).

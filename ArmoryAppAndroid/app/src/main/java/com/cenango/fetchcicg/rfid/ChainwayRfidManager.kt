@@ -103,10 +103,9 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
 
             // Must be set before startInventoryTag() per the SDK's own docs.
             reader.setInventoryCallback { tagInfo: UHFTAGInfo ->
-                Log.d(TAG, "setInventoryCallback fired: EPC=${tagInfo.getEPC()}")
                 mainHandler.post {
                     val rssi = tagInfo.getRssi()?.toFloatOrNull() ?: 0f
-                    listener?.onTagRead(tagInfo.getEPC(), rssi)
+                    listener?.onTagRead(fullEpc(tagInfo), rssi)
                 }
             }
 
@@ -164,10 +163,9 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
             // inventorySingleTag() blocks on UART I/O, so run it off the main thread.
             uartExecutor.execute {
                 val tag = reader.inventorySingleTag()
-                Log.d(TAG, "inventorySingleTag() returned: ${tag?.getEPC()}")
                 mainHandler.post {
                     if (tag != null) {
-                        listener?.onTagRead(tag.getEPC(), tag.getRssi()?.toFloatOrNull() ?: 0f)
+                        listener?.onTagRead(fullEpc(tag), tag.getRssi()?.toFloatOrNull() ?: 0f)
                     } else {
                         listener?.onErrorOccurred(RfidError.NO_TAG)
                     }
@@ -201,6 +199,17 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
         // `offset`/`tagLength` already use for AsSelectMaskEPCParam.
         uartExecutor.execute { uhf?.setFilter(IUHF.Bank_EPC, parameters.offset, parameters.tagLength, maskString) }
     }
+
+    // The SDK reports a tag's PC (Protocol Control) word separately from its
+    // EPC — getEPC() alone came out 4 hex chars shorter than what iOS's
+    // AsReader SDK reports for the exact same physical tag (confirmed via
+    // logcat: PC="3000", EPC="E15002535072720212000369", and PC+EPC matches
+    // iOS's "3000E15002535072720212000369" exactly). Backend EPC lookups,
+    // masking (setMask()'s startIndex/length are offsets into *this* full
+    // string), and cross-platform search/checkout/checkin all depend on the
+    // two clients reporting the same tag ID for the same physical tag, so
+    // every tag read must go through this rather than getEPC() alone.
+    private fun fullEpc(tagInfo: UHFTAGInfo): String = (tagInfo.getPc() ?: "") + tagInfo.getEPC()
 
     override fun getBatteryStatus(): RfidBatteryStatus {
         val batteryManager = context.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
