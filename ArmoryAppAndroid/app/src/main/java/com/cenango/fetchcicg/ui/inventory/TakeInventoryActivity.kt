@@ -1,7 +1,10 @@
 package com.cenango.fetchcicg.ui.inventory
 
 import android.content.Intent
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -48,6 +51,7 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
 
     private var isScanning = false
     private val foundTags = mutableSetOf<String>()
+    private var lastBeepAtMs = 0L
 
     // Tracks the pending onConnected() coroutine so a redundant reconnect
     // (the reader's ConnectionStatusCallback can report CONNECTED twice
@@ -55,6 +59,12 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
     // root cause fixed in ScanActivity's/LocateAssetActivity's scanLoopJob)
     // cancels the old one instead of racing it with a second.
     private var scanLoopJob: Job? = null
+
+    // Fires once per newly-found unique tag (not on every repeat read of a
+    // tag already in foundTags) — this screen had no audible feedback at
+    // all, unlike ScanActivity/LocateAssetActivity. STREAM_MUSIC, not
+    // STREAM_NOTIFICATION — see ScanActivity's beep for why.
+    private var toneGenerator: ToneGenerator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +82,12 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
 
         actionButton.setOnClickListener { toggleScanning() }
 
+        toneGenerator = try {
+            ToneGenerator(AudioManager.STREAM_MUSIC, ToneGenerator.MAX_VOLUME)
+        } catch (e: RuntimeException) {
+            null
+        }
+
         app.rfidManager.listener = this
 
         if (app.rfidManager.isDeviceConnected) {
@@ -87,6 +103,8 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
         app.rfidManager.stopRfidScanning()
         pulseView.stop()
         if (app.rfidManager.listener === this) app.rfidManager.listener = null
+        toneGenerator?.release()
+        toneGenerator = null
     }
 
     private fun onConnected() {
@@ -190,6 +208,17 @@ class TakeInventoryActivity : AppCompatActivity(), RfidManagerListener {
 
     override fun onTagRead(tag: String, rssi: Float) {
         if (foundTags.add(tag)) updateTagCount()
+
+        // Beeping on every raw read (multiple times a second while anything
+        // is in range) sounded like overlapping noise, not feedback — paced
+        // to the pulse animation's own rhythm instead (a new ring starts
+        // every PulseView.PULSE_INTERVAL_MS), so it reads as "actively
+        // finding tags" in step with what's on screen rather than a buzz.
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastBeepAtMs >= PulseView.PULSE_INTERVAL_MS) {
+            lastBeepAtMs = now
+            toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
+        }
     }
 
     override fun onDeviceOverheated() {

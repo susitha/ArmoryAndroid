@@ -131,7 +131,7 @@
     <string name="inventory_breakdown_title">Breakdown</string>
     <string name="inventory_group_available_format">%1$d\nAvailable</string>
     <string name="inventory_group_missing_format">%1$d\nMissing</string>
-    <string name="inventory_group_checkedout_format">%1$d\nCheckouts</string>
+    <string name="inventory_group_checkedout_format">%1$d\nChecked</string>
     <string name="inventory_retake_button">Retake</string>
     <string name="inventory_empty_no_results">No Results Found</string>
 </resources>

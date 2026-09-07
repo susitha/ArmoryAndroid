@@ -42,9 +42,12 @@ enum class ScanFlow { ENROLL, CHECKIN, CHECKOUT }
  * unit tested so far has fired a *different* keycode for the same trigger
  * (293 on a C72, 294 on a C66 — both confirmed live via logcat during a real
  * press), so that's a set of confirmed values, not one "correct" code — see
- * its doc for how to add another. This screen also still auto-starts one
- * scan attempt on connect and lets the card be tapped to retry, both as
- * fallbacks in case a keycode isn't in the set yet.
+ * its doc for how to add another. Tapping the card also scans, as a
+ * fallback in case a keycode isn't in the set yet. An earlier version also
+ * auto-started one scan attempt on connect (a fallback for the same
+ * unconfirmed-keycode case) — removed on request after being reported as
+ * scanning "automatically" without the trigger being pressed; see
+ * [setUpTagModeAfterDelay]'s doc.
  *
  * No reader connected (e.g. testing on an emulator, or before a physical C72
  * is available)? In debug builds, tapping the card simulates a tag read
@@ -104,8 +107,8 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
     // arrives while false is one of those stray reads and is ignored.
     private var isScanInFlight = false
 
-    // Tracks the pending beginScanningAfterDelay() coroutine so a redundant
-    // reconnect (see beginScanningAfterDelay's doc) cancels the old one
+    // Tracks the pending setUpTagModeAfterDelay() coroutine so a redundant
+    // reconnect (see setUpTagModeAfterDelay's doc) cancels the old one
     // instead of racing it with a second.
     private var scanLoopJob: Job? = null
 
@@ -143,7 +146,7 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
 
         if (app.rfidManager.isDeviceConnected) {
             render(ScanUiState.DEVICE_CONNECTED)
-            beginScanningAfterDelay()
+            setUpTagModeAfterDelay()
         } else {
             render(ScanUiState.DEVICE_NOT_CONNECTED)
         }
@@ -167,22 +170,30 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
         return super.dispatchKeyEvent(event)
     }
 
-    private fun beginScanningAfterDelay() {
+    /**
+     * Puts the reader into single-tag mode shortly after connecting, ready
+     * for a trigger press or card tap — deliberately does **not** call
+     * [attemptScan] itself. That auto-scan-on-connect used to be here (a
+     * fallback so the screen wasn't stuck waiting if the trigger key didn't
+     * register on some device/firmware), but was reported as scanning
+     * "automatically" without the trigger being pressed and removed on
+     * request: this screen now only ever scans from an explicit trigger
+     * press, card tap, or (debug builds) simulated tap.
+     */
+    private fun setUpTagModeAfterDelay() {
         // The reader's ConnectionStatusCallback can report CONNECTED twice in
         // quick succession right after this screen opens (confirmed via
         // logcat: onReaderConnected() firing once from onCreate's own
         // isDeviceConnected check, then again ~100ms later from a genuine
-        // second callback). Without cancelling a still-pending scan loop,
-        // that produced two independent delayed attemptScan() calls racing
-        // each other — the app-visible symptom was scanning/beeping that
-        // looked "automatic," worst on a screen's second visit.
+        // second callback). Without cancelling a still-pending setup, that
+        // ran setTagRfidMode()/clearMask() twice in a race — see
+        // ChainwayRfidManager.startRfidScanning()'s doc for the concrete bug
+        // this caused before it was routed through uartExecutor.
         scanLoopJob?.cancel()
         scanLoopJob = lifecycleScope.launch {
             delay(1500)
             app.rfidManager.setTagRfidMode()
             app.rfidManager.clearMask()
-            render(ScanUiState.SCANNING)
-            attemptScan()
         }
     }
 
@@ -241,7 +252,7 @@ class ScanActivity : AppCompatActivity(), RfidManagerListener {
 
     override fun onReaderConnected() {
         render(ScanUiState.DEVICE_CONNECTED)
-        beginScanningAfterDelay()
+        setUpTagModeAfterDelay()
     }
 
     override fun onReaderDisconnected() {

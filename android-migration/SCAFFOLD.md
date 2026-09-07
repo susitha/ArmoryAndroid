@@ -285,11 +285,16 @@ ArmoryAppAndroid/
     since iOS reuses one `ScanViewController` for all three flows — only
     `ENROLL` is wired from Dashboard so far; Checkin/Checkout still show
     "coming soon". Shows connection/battery status and a single-tag scan.
-  - **Important behavioral gap**: iOS starts scanning when the reader's
-    physical trigger key is pressed. The Chainway SDK doesn't expose that key
-    as a callback (see `ChainwayRfidManager`'s TODO), so `ScanActivity`
-    auto-starts one scan attempt on connect and lets the status card be
-    tapped to retry, as a stand-in. Fix properly once the trigger key is wired.
+  - **Important behavioral gap, since closed**: iOS starts scanning when the
+    reader's physical trigger key is pressed. The Chainway SDK doesn't expose
+    that key as a callback (see `ChainwayRfidManager`'s TODO), so
+    `ScanActivity` originally auto-started one scan attempt on connect and
+    let the status card be tapped to retry, as a stand-in. The trigger key
+    itself got wired up for real later (see Next steps §2 above) — the
+    auto-scan-on-connect stand-in outlived that fix and was only removed
+    much later still, after being reported as scanning "automatically"
+    without the trigger being pressed (see the note right below this one).
+    Tap-to-retry was kept as a fallback throughout.
   - **No reader connected at all** (emulator, or no C72 on hand yet): tapping
     the card in a `BuildConfig.DEBUG` build simulates a tag read (a random
     `3000E2`-prefixed EPC, one every tap so repeat enrollments don't collide)
@@ -402,6 +407,20 @@ ArmoryAppAndroid/
     `batteryRow`'s (now-gone) top. `LocateAssetActivity`/
     `TakeInventoryActivity` keep their own battery rows — this request was
     specifically about the Scan screen (Enroll/Checkin/Checkout), not those.
+  - **Auto-scan-on-connect removed** ("when enrolling it scan automatically
+    even though trigger button not pressing"). First confirmed this was the
+    long-standing, intentional stand-in behavior (fires once ~1.5s after
+    connect, documented above) rather than a regression — the report
+    described exactly one automatic read per screen visit, then quiet, which
+    is what that stand-in was always meant to do. Asked directly whether to
+    keep or remove it once confirmed benign; told to remove it. `beginScanningAfterDelay()`
+    renamed to **`setUpTagModeAfterDelay()`** and its trailing
+    `render(SCANNING)` + `attemptScan()` calls dropped — it now only puts the
+    reader into Tag mode and clears the mask, leaving the screen at
+    `DEVICE_CONNECTED` until an actual trigger press, card tap, or (debug)
+    simulated tap calls `attemptScan()` itself. Tap-to-retry stays as the
+    fallback for an unconfirmed trigger keycode; only the *automatic* first
+    attempt is gone.
   - `EnterAssetDetailsActivity`/`AssetSummaryActivity` pass data forward via
     plain `Intent` extras (name/description/categoryId/tag/serialNumber/
     assignedUserId), not Parcelable objects — avoids needing `@Parcelize`
@@ -718,6 +737,27 @@ ArmoryAppAndroid/
     display — which can leave that message invisible while still "scanning".
     This port forces back to the status card in that case instead, so the
     problem is actually seen.
+  - **Beep added** ("can't hear the beep in inventory view") — this screen
+    had no audible feedback at all, unlike `ScanActivity`/`LocateAssetActivity`.
+    `onTagRead()` now fires a `ToneGenerator` beep (`STREAM_MUSIC`, same
+    audibility fix as those two). First scoped to only new unique tags
+    (`foundTags.add(tag)` returning `true`), on the assumption that mirroring
+    the live-count semantics made sense — corrected on direct follow-up
+    ("not for new tag all scans"): it beeps on *every* read now, repeats
+    included, `foundTags.add(tag)` only still gating whether the count
+    updates. Matches the same continuous-feedback intent as
+    `LocateAssetActivity`'s proximity beep, just without that one's
+    proximity-based interval shaping. **One more pass**: beeping on every
+    raw read (multiple times a second while anything stayed in range)
+    sounded like overlapping noise, not feedback ("lets put a beep as the
+    pulse show. otherwise it generates ugly sound"). Paced it to the pulse
+    animation's own rhythm instead of inventing a new interval —
+    `PulseView`'s `RING_COUNT`/`CYCLE_MS` were already `private`, promoted
+    the ratio to a public `PULSE_INTERVAL_MS` (1000ms: a new ring starts
+    every `CYCLE_MS / RING_COUNT`) so `TakeInventoryActivity` derives its
+    beep throttle from the same constant driving what's already on screen,
+    instead of a second hand-picked number that could drift out of sync
+    with it later.
   - **Pulse rings' `centerDot` swapped for the device illustration**, same
     fix as `LocateAssetActivity` and for the same request ("make the
     inventory view pulsar same with the device illustration") — the plain
@@ -777,6 +817,40 @@ ArmoryAppAndroid/
     throwaway autosize + logging pass, then hard-code that — don't keep
     guessing static values, and don't ship autosize itself if uniform sizing
     across a row matters more than each button's own best-fit.
+  - **9sp itself then reported as "very small"** — 9 characters just doesn't
+    read comfortably in this column width no matter how it's fit. Asked the
+    user directly rather than guessing a 4th time: shorten the labels
+    (chosen over letting the word wrap onto its own line, or leaving 9sp as-
+    is). `inventory_group_available_format`/`..._checkedout_format` changed
+    from "Available"/"Checkouts" to **"Avail."/"Checked"** (both ≤7 chars —
+    "Missing," already the shortest of the three, was left as-is);
+    `textSize` raised from 9sp to **11sp**, sized by the same reasoning that
+    landed 9sp for 9-char labels in this exact column/padding — not
+    re-measured live (this screen needs a full scan flow to reach), but
+    informed by that real number rather than a blind re-guess.
+  - **Still "very small" at 11sp** — pushed further: `paddingStart`/
+    `paddingEnd` trimmed from 2dp to **0dp** (last remaining slack in the
+    button's own horizontal padding after the earlier inset fix), the 3
+    buttons' `layout_marginStart`/`layout_marginEnd` between each other
+    trimmed from 5dp to **3dp** (reclaiming a bit more from the row's total
+    width budget, not just each button's own padding), and `textSize` raised
+    to **13sp** — reasonable headroom above 11sp now that the labels are
+    short (≤7 chars) and every other bit of slack in the row has been
+    reclaimed too.
+  - **"show the full title 'Available'"**: reverted
+    `inventory_group_available_format` from "Avail." back to "Available"
+    (9 chars again — longer than "Missing"/"Checked" at 7). Rather than
+    another guess-rebuild-reinstall round on a screen that takes a full scan
+    flow to even reach, gave `availableButton` its own
+    `autoSizeTextType="uniform"` (8–13sp cap) instead of the fixed 13sp the
+    other two keep — guarantees it can't clip regardless of exactly how much
+    smaller "Available" needs to run than "Missing"/"Checked" do at 13sp.
+    Same tradeoff as Dashboard's menu-row saga: this reintroduces the
+    per-button-independent-sizing inconsistency that row explicitly moved
+    away from — deliberately accepted here since the ask was specifically
+    "show the full title," not "keep it uniform with the others"; revisit
+    with the measure-then-hard-code approach (see the two notes above) if
+    that inconsistency gets flagged the same way it did on Dashboard.
 
 ## Next steps
 

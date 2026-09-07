@@ -23,9 +23,12 @@ class PulseView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
-    private companion object {
-        const val RING_COUNT = 3
-        const val CYCLE_MS = 3000L
+    companion object {
+        private const val RING_COUNT = 3
+        private const val CYCLE_MS = 3000L
+
+        /** How often a new ring starts (the visual "pulse" rhythm) — used by TakeInventoryActivity to pace its beep. */
+        const val PULSE_INTERVAL_MS = CYCLE_MS / RING_COUNT
     }
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {

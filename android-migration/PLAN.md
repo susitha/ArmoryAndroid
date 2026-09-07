@@ -204,3 +204,29 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       path — see SCAFFOLD.md's RFID abstraction section for the full
       detail, including a likely second bug this incidentally also fixed
       (the hardware EPC mask being applied to a too-short string).
+- [x] A batch of Locate/Inventory/Breakdown polish and real bugs from
+      continued on-device testing — full detail in SCAFFOLD.md's Search and
+      Inventory flow notes: an asset header (icon/name/category/serial)
+      added to the top of `LocateAssetActivity`; the signal gauge rebuilt as
+      a segmented meter matching a real iOS reference screenshot (was a
+      continuous-fill bar, a documented simplification, not a bug) and
+      repositioned (device+pulse at its base, not beside it); a proximity
+      beep added to Locate and a per-new-tag-then-every-read beep added to
+      Inventory, both eventually paced to `PulseView`'s own animation rhythm
+      after an unthrottled version "generated an ugly sound"; two real bugs
+      — `stopScanning()` leaving `TakeInventoryActivity` in a stale
+      "Stop"-labeled state after Retake, and `LocateAssetActivity.onTagRead()`
+      never checking the EPC matched the target tag before updating the
+      gauge (letting an unrelated stray tag drive it) — both fixed. Also a
+      long dashboard/breakdown button text-fit saga (12sp → 10sp → autosize
+      → padding trim → measured-and-hardcoded 9sp → shortened labels at
+      11sp → 13sp with further-trimmed padding/margins → "Available"
+      restored in full via a per-button autosize cap) — see SCAFFOLD.md's
+      Dashboard and Inventory notes for the whole trail; the reusable lesson
+      is in there too (measure the real resolved size instead of guessing).
+- [x] `ScanActivity`'s auto-scan-on-connect stand-in removed on request
+      ("when enrolling it scan automatically even though trigger button not
+      pressing") — confirmed first that it was the long-standing intentional
+      behavior (fires once, then quiet), not a regression, then removed
+      anyway since only explicit trigger/tap scans are wanted now. See
+      SCAFFOLD.md's Enroll flow notes.
