@@ -23,6 +23,7 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
+            android:theme="@style/Theme.FetchCICG.Splash"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

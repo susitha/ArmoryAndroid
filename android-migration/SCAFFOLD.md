@@ -181,6 +181,195 @@ ArmoryAppAndroid/
   - iOS prefills admin credentials in `#if DEBUG` builds; that wasn't ported
     (deliberately) — add local dev-only prefill yourself if wanted, rather
     than checking credentials into this file.
+  - **Splash screen added** — there wasn't one at all before (confirmed by
+    checking, not assumed: no `SplashActivity`, no `windowSplashScreen*`
+    theme attributes, `LoginActivity` itself is the `MAIN`/`LAUNCHER`
+    activity). Implemented via AndroidX **`core-splashscreen`** (`1.0.1`,
+    added to `app/build.gradle.kts`) — the current standard approach, not a
+    separate `SplashActivity` + manual delay (an older pattern Google now
+    discourages: extra real startup time for no benefit, an extra
+    back-stack entry, easy to get back-press handling wrong). No new
+    activity: a `Theme.FetchCICG.Splash` style
+    (`values/themes.xml`, `parent="Theme.SplashScreen"`) sets
+    `windowSplashScreenBackground="@color/white"`, with
+    `postSplashScreenTheme` pointing back at `Theme.FetchCICG`. That theme is
+    set directly on `LoginActivity`'s manifest entry (overriding the
+    app-level default just for it, since it's the actual launcher), and
+    `LoginActivity.onCreate()` calls `installSplashScreen()` as its literal
+    first line, before `super.onCreate()` — required by the library, since
+    it reads the activity's theme to know what to show and dismisses itself
+    once that activity's first frame is drawn.
+  - **Follow-up fix — cropped-circle icon**: `windowSplashScreenAnimatedIcon`
+    was originally set to `@drawable/logo` (the same transparent wide logo
+    used on the login screen itself), reasoned as a good choice since it'd
+    give a color-consistent splash-to-login handoff. Reported by the user
+    after first install: "icon is cropped circle, need the logo in the white
+    screen." Root cause: the splash icon slot applies the same icon-style
+    scaling/masking a launcher icon gets (it's drawn through an
+    `AdaptiveIconDrawable`-like path even for a plain drawable), and
+    `logo.png` isn't inset for that — it's a full-bleed wide mark, not built
+    with a safe zone, so the mask cropped it into a circle. Fixed by pointing
+    `windowSplashScreenAnimatedIcon` at `@mipmap/ic_launcher_foreground`
+    instead — the adaptive-launcher-icon foreground layer, already built with
+    the standard 66% safe-zone inset specifically so it survives a circular/
+    squircle mask cleanly — plus an explicit
+    `windowSplashScreenIconBackgroundColor="@color/white"` as a safety net
+    against any visible circular backplate. Confirmed via `adb screencap` on
+    the emulator: full uncropped "A" mark on white, no circle. Not yet
+    re-verified on the C66 (Android 11 / API 30 — below the native
+    `SplashScreen` API's floor, so the compat library falls back to drawing
+    the splash itself rather than deferring to the OS) since it wasn't
+    connected when this landed — worth a quick recheck there since the compat
+    rendering path is different code from the native one this was verified
+    against.
+  - Unrelated emulator-only noise hit while verifying this: a one-time
+    "Android App Compatibility" system dialog about the Chainway SDK's native
+    libs not being 16 KB page-size aligned (`libIDFingerprintAlg.so`,
+    `libDeviceAPIQ.so`, `libDeviceAPIM.so`). This is a stock Android 15+/API 35+
+    emulator compatibility warning, unrelated to the splash fix and not
+    something fixable from this app (the `.so` files ship inside the
+    Chainway `DeviceAPI` `.aar`) — dismissed with "Don't Show Again". Real
+    C72/C66 hardware runs older Android and won't show this.
+  - **Follow-up fix — rounded-corner launcher icon**: separate report right
+    after the splash fix, "now its showing rounded corner icon" — this was
+    about the home-screen/app-drawer launcher icon, not the splash. Cause:
+    `mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_round.xml` declared a
+    real Android **adaptive icon** (`<background>@color/white</background>` +
+    `<foreground>@mipmap/ic_launcher_foreground</foreground>`), and
+    `AdaptiveIconDrawable` always clips to the device's configured icon-mask
+    shape (`config_icon_mask`, an OEM resource) wherever the OS resolves the
+    icon — independent of which launcher app is drawing it. On the C66's
+    Chainway-customized launcher that mask happens to be a rounded square, so
+    our icon showed rounded corners while neighboring apps that ship a plain
+    flat (non-adaptive) icon — Armory, AppCenter, Calculator, Drive, Files —
+    stayed hard-cornered, since a flat legacy icon is never run through
+    `AdaptiveIconDrawable` at all. Fixed by dropping the adaptive icon
+    entirely: deleted `mipmap-anydpi-v26/` (both XMLs), and regenerated
+    `mipmap-*/ic_launcher.png` + `ic_launcher_round.png` as plain flat
+    square PNGs. First attempt reused the padded adaptive-icon foreground
+    layer (66% safe-zone inset) composited onto white — this fixed the C66
+    (flat, hard corners, confirmed via `adb screencap`) but the emulator's
+    Pixel Launcher still wrapped it in a circle. Root cause of *that*: Android
+    auto-synthesizes adaptive-style masking for **any** icon — adaptive or
+    plain legacy — belonging to an app with `targetSdkVersion >= 26` (this
+    app targets 34), on launchers that enforce it (stock/Pixel Launcher does;
+    Chainway's simpler OEM launcher apparently doesn't). That's a platform
+    policy applied at icon-resolution time, not something fixable via which
+    PNG we ship — a real device's Play-Store-launcher install of this app
+    would get masked the same way regardless. Since this app only ever
+    deploys to the Chainway handhelds (not the Play Store), the emulator's
+    stricter masking isn't representative of the real target and isn't worth
+    chasing further; the fix that matters is the one confirmed on the C66.
+    Second pass swapped the icon source for the actual iOS
+    `AppIcon.appiconset/1024.png` master (full-bleed, ~85% canvas width, no
+    adaptive safe-zone padding) instead of the padded foreground layer, so
+    the flat icon now fills its tile closer to how the other flat-icon apps
+    on the device look, rather than sitting small and centered. The splash
+    screen's `ic_launcher_foreground` reference is untouched — that image is
+    still needed with its safe-zone inset for the splash's own icon-mask
+    slot.
+  - **Regression from the above — splash icon corners clipped**: pushed the
+    launcher icon further still, to ~92% canvas width (cropping the source
+    content to its bounding box first, then scaling up), to make it read as
+    boldly as neighboring flat icons like Drive's solid triangle. Reported
+    immediately: "the corners of the A shape are cut off in splash screen
+    icon." Root cause: Android's cold-start icon transition (the zoom-in
+    animation from the tapped icon into the splash, part of the Android 12+
+    launch sequence — confirmed by catching the actual transition frame via
+    a tightly-timed `adb screencap` burst, 0-40ms after `am start`) uses the
+    app's regular launcher icon (`android:icon`, i.e. `ic_launcher.png`) and
+    applies the same circular icon-mask treatment described above. Android's
+    documented adaptive-icon safe zone is a **66%-width concentric circle**
+    specifically so content survives that kind of masking; pushing the
+    launcher icon to 92% put most of the mark's corners outside that circle,
+    so they got clipped during the transition even though the dedicated,
+    still-untouched `ic_launcher_foreground` (correctly at 66%, verified by
+    measuring its actual content bounding box in code) rendered the final
+    settled splash frame perfectly fine — the bug was only ever visible for
+    the ~100ms transition, not the static splash. Fixed by reverting
+    `ic_launcher.png`/`ic_launcher_round.png` back to the safe 66%-inset
+    version (same content as `ic_launcher_foreground`, composited onto
+    opaque white). Confirmed clean via `adb screencap` burst-capture on both
+    the emulator (mid-transition frame included) and the C66.
+  - **Still reported "very small" / "cut off" after the revert** — user
+    pushback with a fresh, clean-installed (`uninstall` + `install`, then a
+    full device reboot to rule out any icon-cache staleness) test on the C66
+    still showed the same small icon. Investigated by directly diffing the
+    packaged APK's `ic_launcher.png` (confirmed, via unzip, to actually
+    contain whichever fill-ratio version was last built) against what the
+    launcher displayed — and found the on-screen size was **identical**
+    whether the shipped flat PNG was at 66%, 85%, or 92% fill. That's the
+    real root cause of the whole "small" saga: once an icon is declared as a
+    **flat/legacy** `ic_launcher.png` (no `mipmap-anydpi-v26/ic_launcher.xml`),
+    Android's icon-loading pipeline runs it through its own normalization
+    for any app targeting API 26+ (this app targets 34) and renders it at a
+    fixed, conservative apparent size — the source fill ratio doesn't matter
+    once that normalization kicks in. There is no PNG-only fix for "flat but
+    reads as big" on a modern-targetSdk app; the normalization is unconditional.
+    Resolved by **restoring the adaptive icon** (recreated
+    `mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_round.xml`, same
+    `@color/white` background + `@mipmap/ic_launcher_foreground` foreground
+    as originally authored) — adaptive icons skip that legacy-normalization
+    path entirely and render the foreground at its authored 66% safe-zone
+    size, which reads as properly-sized (confirmed via `adb screencap`,
+    matching Drive/Calculator's visual weight in the C66 app drawer).
+    Cross-checked against the very first pre-any-fix screenshot from this
+    session: **Drive already had the identical soft-rounded white card** in
+    the app drawer back then too — that rounding is uniform launcher chrome
+    applied to every app's tile, not something specific to our icon, and not
+    something an adaptive vs. flat icon choice changes. In hindsight, the
+    original "rounded corner icon" report that kicked off this entire chain
+    of fixes was most likely this same universal card styling, misread as a
+    per-app bug — the adaptive icon was fine all along, and today's
+    experiments (flat icon → bold flat icon → revert → adaptive again) net
+    out to restoring the exact original icon declaration. The splash
+    (`ic_launcher_foreground`, always untouched through all of this) was
+    reconfirmed clean on both devices after this final change. Lesson for
+    next time: when a launcher-chrome-level visual (a background card, a
+    shadow, a corner radius) is suspected of being app-specific, diff it
+    against a known-good neighboring app's icon in the *same* screenshot
+    before changing any of our own assets.
+  - **The splash crop was real after all — found via measurement, not
+    eyeballing.** User kept reporting "corners cut off" on the splash even
+    after screenshots looked clean by eye (theirs and mine, side by side,
+    repeatedly). Stopped trusting visual inspection and instead measured the
+    actual rendered content's bounding-box aspect ratio on a screenshot vs.
+    the source file's: the on-screen mark measured ~1.34–1.35 (width/height)
+    against the source's 1.50 — a real, reproducible, ~10% deficit, present
+    identically whether captured immediately or a full second after launch
+    (ruling out a mid-animation timing artifact), and identical whether
+    checked via a coarse or a careful full-resolution pixel scan. That
+    confirmed actual clipping, not a perception issue. Root cause: the
+    official Android adaptive-icon safe zone is a **66dp-diameter circle
+    inside a 108dp canvas** (~30.6% radius from center — NOT the "66% width"
+    figure used throughout this whole saga, which was never the right
+    number). Because this logo is wide and short (aspect ~1.5), a
+    width-based fill ratio is a bad proxy for whether it survives a
+    *circular* mask — what actually matters is the bounding box's *corner
+    distance from center*, and for this aspect ratio the true safe width is
+    only **~48% of the canvas**, not 66%. The foreground had been sitting at
+    65.7% width this whole time — comfortably past the true safe limit — so
+    every one of today's "confirmed clean" checks by eye had actually been
+    looking at a real, if visually subtle, crop. Fixed by recomputing the
+    safe size from the actual math (radius ratio 33/108, plus a 10% safety
+    margin) and regenerating `ic_launcher_foreground.png` at every density
+    from the master crop at ~45.6% width — verified this time by re-running
+    the *same bounding-box measurement*, not a screenshot glance: aspect
+    improved from ~1.34 to ~1.446 (vs. the true 1.50 target), with the
+    remaining ~4% gap consistent with anti-aliasing noise at these pixel
+    sizes rather than real clipping, confirmed visually clean on both
+    devices. The flat `ic_launcher.png`/`ic_launcher_round.png` were
+    regenerated from the same corrected asset for consistency. Net effect:
+    both the splash icon and the launcher icon are now noticeably smaller
+    than at any earlier point in this saga — the previous "properly sized"
+    launcher icon was actually oversized relative to what a circular mask
+    can safely show without cropping it. Lesson for next time: when a user
+    repeatedly insists a rendering bug is real and screenshots keep looking
+    fine, measure the actual pixel geometry (bounding box, aspect ratio)
+    before concluding it's a perception issue — "looks fine to me" is not
+    a substitute for checking the numbers, especially for a masking/safe-zone
+    class of bug where a 10% clip can be easy to miss by eye but shows up
+    immediately in a bounding-box comparison.
 - **`ui/dashboard/DashboardActivity.kt`** + `res/layout/activity_dashboard.xml`
   + `res/layout/item_dashboard_info.xml` — a real port of
   `DashboardViewController.swift`: title row with a logout action, a 2x2 grid

@@ -44,7 +44,7 @@ class ChainwayRfidManager(private val context: Context) : RfidManager {
         // stopInventory()/setPower()/setFilter()'s reliability issue in
         // SCAFFOLD.md) — treat 5 as a reasonable conservative floor, not a
         // verified one.
-        private const val POWER_GAIN_MIN = 5
+        private const val POWER_GAIN_MIN = 10
         private const val POWER_GAIN_MAX = 30
     }
 

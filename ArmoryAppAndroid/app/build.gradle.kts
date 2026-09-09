@@ -53,6 +53,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.activity:activity-ktx:1.9.1")
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Networking — mirrors the role of API.swift / API+Endpoint.swift / API+Blueprint.swift
     implementation("com.squareup.retrofit2:retrofit:2.11.0")

@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.cenango.fetchcicg.FetchCICGApplication
 import com.cenango.fetchcicg.BuildConfig
@@ -34,6 +35,12 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var app: FetchCICGApplication
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Must run before super.onCreate() — installSplashScreen() reads the
+        // activity's theme (Theme.FetchCICG.Splash, set in the manifest) to
+        // show the splash, then applies postSplashScreenTheme and dismisses
+        // it automatically once this activity's first frame is drawn. No
+        // separate SplashActivity/manual delay needed.
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         app = application as FetchCICGApplication
