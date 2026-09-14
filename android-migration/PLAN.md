@@ -334,3 +334,15 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       used only by `windowSplashScreenAnimatedIcon`; the launcher's
       `ic_launcher_foreground` is untouched and still correctly sized for
       its own 48dp use. Confirmed sharp via zoomed screencap on the C66.
+- [x] Locked all 17 activities to portrait (`android:screenOrientation=
+      "portrait"` added to every `<activity>` in AndroidManifest.xml) after
+      "if device orientation landscape UI getting messy" — no activity had
+      any orientation constraint before, so the app silently allowed free
+      rotation even though no layout was ever designed for landscape. Checked
+      the iOS source's `Info.plist` first: `UISupportedInterfaceOrientations`
+      is portrait-only for iPhone (landscape is iPad-only), confirming this
+      is the intended behavior, not a Kotlin-specific gap to design around.
+      Matches how these Chainway handhelds are actually held/gripped for
+      scanning. Confirmed on the emulator by forcibly rotating the OS to
+      landscape (`settings put system user_rotation 1`) with the app in the
+      foreground — it stayed portrait.
