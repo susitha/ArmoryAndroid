@@ -17,19 +17,26 @@
          API down to minSdk. White background, postSplashScreenTheme back to
          the app's real theme once the splash is dismissed.
 
-         windowSplashScreenAnimatedIcon points at ic_launcher_foreground, not
-         the raw logo.png — the splash icon slot applies icon-style
-         scaling/masking (the same treatment a launcher icon gets), and
-         logo.png isn't inset for that the way an adaptive-icon foreground
-         is. Using the raw logo showed up cropped into a circle; the
-         foreground layer is the same "A" mark already built with the
-         standard 66% safe-zone inset specifically so it survives a circular/
-         squircle mask cleanly (see the launcher-icon notes in SCAFFOLD.md),
-         so it's the correct asset for an icon-shaped slot, not a second
-         logo variant. -->
+         windowSplashScreenAnimatedIcon points at drawable-nodpi/splash_icon,
+         a dedicated 864x864 asset — NOT @mipmap/ic_launcher_foreground.
+         The splash icon slot applies the same circular safe-zone masking a
+         launcher icon gets (see the launcher-icon notes in SCAFFOLD.md for
+         the full math: true safe content width for this logo's aspect ratio
+         is ~46%, not the 66% originally assumed), so both assets share that
+         same ~46%-width-safe content. But the splash icon renders at a much
+         larger on-screen size than a 48dp launcher icon (~240dp per the
+         platform's SplashScreen spec), while ic_launcher_foreground's mipmap
+         buckets are sized for the 48dp launcher use case (max 192px at
+         xxxhdpi) — reusing that asset for the splash meant a ~46%-width
+         sliver of an already-small bitmap was being stretched ~5x to fill
+         the splash icon's actual display size, which read as visibly low-
+         resolution/blurry. splash_icon.png is sized independently (864px
+         canvas, single drawable-nodpi asset, same content proportions) so
+         the splash gets enough source resolution to look sharp at its real
+         display size regardless of density bucket. -->
     <style name="Theme.FetchCICG.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/white</item>
         <item name="postSplashScreenTheme">@style/Theme.FetchCICG</item>
     </style>

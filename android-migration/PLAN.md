@@ -324,3 +324,13 @@ No backend/API changes are expected — only the client-side RFID hardware chang
       any earlier point today — that's the actual correct safe size, not a
       regression. See SCAFFOLD.md for the full math and the lesson about
       verifying masking bugs by measurement, not by eye.
+- [x] Follow-up: "splash screen icon resolution is very low" after the
+      shrink above. `ic_launcher_foreground`'s mipmap sizes are tuned for a
+      48dp launcher icon (max 192px canvas), but the platform renders the
+      splash icon at ~240dp — several times larger — so the already-small
+      ~46%-width safe content was being stretched ~5x, reading as blurry.
+      Fixed by adding a dedicated `drawable-nodpi/splash_icon.png` at a
+      fixed 864px canvas (same master crop, same safe content proportion)
+      used only by `windowSplashScreenAnimatedIcon`; the launcher's
+      `ic_launcher_foreground` is untouched and still correctly sized for
+      its own 48dp use. Confirmed sharp via zoomed screencap on the C66.

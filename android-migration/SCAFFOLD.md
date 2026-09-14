@@ -370,6 +370,29 @@ ArmoryAppAndroid/
     a substitute for checking the numbers, especially for a masking/safe-zone
     class of bug where a 10% clip can be easy to miss by eye but shows up
     immediately in a bounding-box comparison.
+  - **Follow-up — low-resolution splash icon.** After shrinking the safe
+    content down to ~46% width, the next report was "splash screen icon
+    resolution is very low." Cause: `ic_launcher_foreground`'s mipmap
+    buckets are sized for a 48dp **launcher** icon (max 192×192px at
+    xxxhdpi — the standard convention for that use case), but the platform's
+    SplashScreen icon renders at roughly 240dp, several times larger. Once
+    the safe content was shrunk to ~46% of that already-small canvas, the
+    actual visible pixel content was tiny (as little as ~43×29px on an
+    xhdpi device like the C66), and displaying it at the splash's real
+    on-screen size meant stretching that source by ~5x — visibly blurry.
+    Fixed by decoupling the two uses: added a dedicated
+    `drawable-nodpi/splash_icon.png` at a much larger, single fixed
+    resolution (864×864 canvas, generated directly from the same master
+    crop at the same safe ~46% content proportion) used only for
+    `windowSplashScreenAnimatedIcon` in `values/themes.xml`, while
+    `ic_launcher_foreground` (mipmap-based, still ~46% width, appropriately
+    sized for its 48dp launcher-icon use) is unchanged for the launcher and
+    still shared by the adaptive-icon XML. `drawable-nodpi` (not a density
+    bucket) means every device loads the same 864px source and lets the
+    view scale it down as needed, rather than the OS picking a small
+    density-matched bitmap and scaling it up. Confirmed sharp via zoomed-in
+    `adb screencap` comparison on the C66 — clean edges and gradients, no
+    visible pixelation at 3x crop zoom.
 - **`ui/dashboard/DashboardActivity.kt`** + `res/layout/activity_dashboard.xml`
   + `res/layout/item_dashboard_info.xml` — a real port of
   `DashboardViewController.swift`: title row with a logout action, a 2x2 grid
